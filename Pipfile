@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 pylint = "*"
 black = "*"
+openai-whisper = "*"
+flask = "*"
+pytest-flask = "*"
 
 [dev-packages]
 
