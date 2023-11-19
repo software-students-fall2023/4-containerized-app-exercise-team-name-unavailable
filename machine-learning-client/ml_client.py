@@ -1,6 +1,10 @@
 # Web stuff
 from flask import Flask, request
 from os import getenv, remove
+from gunicorn.app.base import BaseApplication
+
+# Note: Environment is provided in .env, but automatically loaded via docker compose.
+# There is no need for load_dotenv().
 
 app = Flask(__name__)
 
@@ -16,9 +20,12 @@ default_writer_args = {
     "max_line_width": None,
     "max_words_per_line": None,
 }
-write_to_srt = lambda raw_transcription: (get_writer("srt", "."))(
-    raw_transcription, **default_writer_args
-)
+
+
+def write_to_srt(raw_transcription):
+    """Takes output from whipser.transcribe() and writes it to an .srt file for later upload."""
+    writer = get_writer("srt", ".")
+    writer(raw_transcription, **default_writer_args)
 
 
 # Database stuff
@@ -28,6 +35,7 @@ import pickle
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
+
 oidtob62 = lambda oid: base64.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base62.decodebytes(b62))
 
@@ -35,19 +43,55 @@ DB = None
 
 
 def main():
-    """Connects to database and launches Flask app"""
+    """Connects to database and launches Flask app,
+    under the assumption that this app is closed off from WAN."""
     global DB
     DB = MongoClient(
         "mongoDB://mongo:27017",
         username=getenv("MONGO_USER"),
         password=getenv("MONGO_PASSWORD"),
     )
-    # TODO: Create the Flask app
+    try:
+        assert getenv("FLASK_STAGE") in ["production", "development"]
+    except AssertionError:
+        print("FLASK_STAGE must be either 'production' or 'development'")
+        exit(1)
+    if getenv("FLASK_STAGE") == "development":
+        app.run(host="0.0.0.0", port=80, debug=True, load_dotenv=False)
+    else:  # if production
+        # Use gunicorn
+        class FlaskApplication(BaseApplication):
+            """Custom gunicorn application."""
+            def __init__(self, application, options=None):
+                self.options = options or {}
+                self.application = application
+                super().__init__()
+
+            def init(self, parser, opts, args):
+                pass
+
+            def load_config(self):
+                for key, value in self.options.items():
+                    self.cfg.set(key, value)
+
+            def load(self):
+                return self.application
+
+        options = {
+            "bind": "0.0.0.0:80",
+            "workers": 1,
+            "threads": 1,
+            "worker_class": "sync",
+        }
+
+        FlaskApplication(app, options).run()
 
 
+# FIXME: This should be asynchronous, not synchronous.
+# The end result should be returning 202 Accepted, not 204 No Content.
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
-    """Takes object ID from request body and starts a transcription job"""
+    """Takes base53 object ID from request body and starts a transcription job."""
     # Get object ID from request
     oid = b62tooid(request.form["id"])
     # Get pickled opus audio data from database
@@ -71,7 +115,12 @@ def transcribe():
     # Remove .opus and .srt files
     remove(f"{request.form['id']}.opus")
     remove(f"{request.form['id']}.srt")
-    # Return 204 No Content
+    return ("", 204)
+
+
+@app.route("/", methods=["GET"])
+def index():
+    """Confirms, externally, that the server is running."""
     return ("", 204)
 
 
