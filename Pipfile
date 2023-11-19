@@ -11,6 +11,8 @@ flask = "*"
 pytest-flask = "*"
 pymongo = "*"
 pybase62 = "*"
+pytest = "*"
+torch = "*"
 
 [dev-packages]
 
