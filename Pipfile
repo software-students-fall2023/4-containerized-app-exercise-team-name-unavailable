@@ -13,6 +13,7 @@ pymongo = "*"
 pybase62 = "*"
 pytest = "*"
 torch = "*"
+gunicorn = "*"
 
 [dev-packages]
 
