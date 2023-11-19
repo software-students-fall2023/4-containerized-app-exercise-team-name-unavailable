@@ -9,6 +9,8 @@ black = "*"
 openai-whisper = "*"
 flask = "*"
 pytest-flask = "*"
+pymongo = "*"
+pybase62 = "*"
 
 [dev-packages]
 
