@@ -6,6 +6,7 @@ app = Flask(__name__)
 
 # AI stuff
 import whisper
+from whisper.utils import get_writer
 from torch import device
 
 # Obtained from whisper/transcribe.py (default CLI args)
@@ -15,7 +16,7 @@ default_writer_args = {
     "max_line_width": None,
     "max_words_per_line": None,
 }
-write_to_srt = lambda raw_transcription: whisper.get_writer("srt", ".").write(
+write_to_srt = lambda raw_transcription: (get_writer("srt", "."))(
     raw_transcription, **default_writer_args
 )
 
@@ -30,38 +31,27 @@ from bson.objectid import ObjectId
 oidtob62 = lambda oid: base64.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base62.decodebytes(b62))
 
-global db
+DB = None
 
 
 def main():
-    db = MongoClient(
-        "mongodb://mongo:27017",
+    """Connects to database and launches Flask app"""
+    global DB
+    DB = MongoClient(
+        "mongoDB://mongo:27017",
         username=getenv("MONGO_USER"),
         password=getenv("MONGO_PASSWORD"),
     )
     # TODO: Create the Flask app
 
 
-"""
-Document specification:
-recording={
-  _id: <ObjectId>,
-  username: <username, string>,
-  name: <recording name, string>,
-  audio: <opus audio, pickled bytes>,
-  finished: <true if finished, false if not, boolean>,
-  transcript: <text inside .srt transcript from OpenAI whisper, null if not finished>,
-  created: <timestamp of creation, using datetime.datetime.utcnow()>
-}
-"""
-
-
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
+    """Takes object ID from request body and starts a transcription job"""
     # Get object ID from request
     oid = b62tooid(request.form["id"])
     # Get pickled opus audio data from database
-    db_audio = db.transcriptions_db.transcriptions.find_one({"_id": oid})["audio"]
+    db_audio = DB.transcriptions_DB.transcriptions.find_one({"_id": oid})["audio"]
     # Write to .opus file
     with open(f"{request.form['id']}.opus", "wb") as f:
         f.write(pickle.loads(db_audio))
@@ -74,8 +64,8 @@ def transcribe():
     )
     write_to_srt(raw_transcription)
     # Put contents of f"{request.form['id']}.srt" into same document, and set finished to true
-    with open(f"{request.form['id']}.srt", "r") as f:
-        db.transcriptions_db.transcriptions.update_one(
+    with open(f"{request.form['id']}.srt", "r", encoding="utf-8") as f:
+        DB.transcriptions_DB.transcriptions.update_one(
             {"_id": oid}, {"$set": {"transcript": f.read(), "finished": True}}
         )
     # Remove .opus and .srt files
