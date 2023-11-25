@@ -2,6 +2,7 @@
 from flask import Flask, request
 from os import getenv, remove
 from gunicorn.app.base import BaseApplication
+import asyncio
 
 # Note: Environment is provided in .env, but automatically loaded via docker compose.
 # There is no need for load_dotenv().
@@ -62,19 +63,23 @@ def main():
         # Use gunicorn
         class FlaskApplication(BaseApplication):
             """Custom gunicorn application."""
+
             def __init__(self, application, options=None):
                 self.options = options or {}
                 self.application = application
                 super().__init__()
 
             def init(self, parser, opts, args):
+                """Unused init function."""
                 pass
 
             def load_config(self):
+                """Sets gunicorn config."""
                 for key, value in self.options.items():
                     self.cfg.set(key, value)
 
             def load(self):
+                """Returns the Flask application."""
                 return self.application
 
         options = {
@@ -87,35 +92,38 @@ def main():
         FlaskApplication(app, options).run()
 
 
-# FIXME: This should be asynchronous, not synchronous.
-# The end result should be returning 202 Accepted, not 204 No Content.
+async def transcribe_job(oid: ObjectId):
+    """Takes base53 object ID and starts a transcription job asynchronously."""
+    # Get pickled opus audio data from database
+    db_audio = DB.transcriptions_DB.transcriptions.find_one({"_id": oid})["audio"]
+    # Write to .opus file
+    with open(f"{oid}.opus", "wb") as f:
+        f.write(pickle.loads(db_audio))
+    model = whisper.load_model("tiny.en")
+    model.device = device("cpu")
+    # Transcribe audio into f"{oid}.srt" using transcribe() and get_writer()
+    raw_transcription = whisper.transcribe(
+        model,
+        f"{oid}.opus",
+    )
+    write_to_srt(raw_transcription)
+    # Put contents of f"{oid}.srt" into same document, and set finished to true
+    with open(f"{oid}.srt", "r", encoding="utf-8") as f:
+        DB.transcriptions_DB.transcriptions.update_one(
+            {"_id": oid}, {"$set": {"transcript": f.read(), "finished": True}}
+        )
+    # Remove .opus and .srt files
+    remove(f"{oid}.opus")
+    remove(f"{oid}.srt")
+
+
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
     """Takes base53 object ID from request body and starts a transcription job."""
     # Get object ID from request
     oid = b62tooid(request.form["id"])
-    # Get pickled opus audio data from database
-    db_audio = DB.transcriptions_DB.transcriptions.find_one({"_id": oid})["audio"]
-    # Write to .opus file
-    with open(f"{request.form['id']}.opus", "wb") as f:
-        f.write(pickle.loads(db_audio))
-    model = whisper.load_model("tiny.en")
-    model.device = device("cpu")
-    # Transcribe audio into f"{request.form['id']}.srt" using transcribe() and get_writer()
-    raw_transcription = whisper.transcribe(
-        model,
-        f"{request.form['id']}.opus",
-    )
-    write_to_srt(raw_transcription)
-    # Put contents of f"{request.form['id']}.srt" into same document, and set finished to true
-    with open(f"{request.form['id']}.srt", "r", encoding="utf-8") as f:
-        DB.transcriptions_DB.transcriptions.update_one(
-            {"_id": oid}, {"$set": {"transcript": f.read(), "finished": True}}
-        )
-    # Remove .opus and .srt files
-    remove(f"{request.form['id']}.opus")
-    remove(f"{request.form['id']}.srt")
-    return ("", 204)
+    asyncio.run(transcribe_job(oid))
+    return ("", 202)
 
 
 @app.route("/", methods=["GET"])
