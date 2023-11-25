@@ -1,3 +1,5 @@
+import sys
+
 # Web stuff
 from flask import Flask, request
 from os import getenv, remove
@@ -56,7 +58,7 @@ def main():
         assert getenv("FLASK_STAGE") in ["production", "development"]
     except AssertionError:
         print("FLASK_STAGE must be either 'production' or 'development'")
-        exit(1)
+        sys.exit(1)
     if getenv("FLASK_STAGE") == "development":
         app.run(host="0.0.0.0", port=80, debug=True, load_dotenv=False)
     else:  # if production
@@ -122,6 +124,11 @@ def transcribe():
     """Takes base53 object ID from request body and starts a transcription job."""
     # Get object ID from request
     oid = b62tooid(request.form["id"])
+    # Check that database has object ID
+    try:
+        assert DB.transcriptions_DB.transcriptions.find_one({"_id": oid}) is not None
+    except AssertionError:
+        return ("", 404)
     asyncio.run(transcribe_job(oid))
     return ("", 202)
 
