@@ -18,11 +18,13 @@ jobs:
 
       - name: Build and tag Docker image
         run: |
-            # To reference the latest on a non-trunk branch, use machine-learning-client:latest.branchname
+            # To reference the latest on a non-trunk branch, use machine-learning-client:latest.sanitized_ref
             if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
               docker buildx build --tag ghcr.io/${{ github.repository }}/machine-learning-client:$(date +%s) --tag ghcr.io/${{ github.repository }}/machine-learning-client:${{ github.sha }} --tag ghcr.io/${{ github.repository }}/machine-learning-client:latest --file ./machine-learning-client/Dockerfile .
             else
-              docker buildx build --tag ghcr.io/${{ github.repository }}/machine-learning-client:$(date +%s) --tag ghcr.io/${{ github.repository }}/machine-learning-client:${{ github.sha }} --tag ghcr.io/${{ github.repository }}/machine-learning-client:latest.${{ github.ref }} --file ./machine-learning-client/Dockerfile .
+              # In a separate variable, replace all special characters in ${{ github.ref }} (except '-' and '.') with '_', and remove the 'refs/heads/' prefix
+              sanitized_ref=$(echo "${{ github.ref }}" | sed -E 's/[^a-zA-Z0-9_.-]+/_/g' | sed -E 's/^refs_heads_//g')
+              docker buildx build --tag ghcr.io/${{ github.repository }}/machine-learning-client:$(date +%s).${{ sanitized_ref }} --tag ghcr.io/${{ github.repository }}/machine-learning-client:${{ github.sha }}.${{ sanitized_ref }} --tag ghcr.io/${{ github.repository }}/machine-learning-client:latest.${{ sanitized_ref }} --file ./machine-learning-client/Dockerfile .
             fi
 
       - name: Log in to GitHub Packages
