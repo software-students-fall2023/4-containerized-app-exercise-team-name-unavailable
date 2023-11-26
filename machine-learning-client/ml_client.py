@@ -4,7 +4,7 @@ import sys
 from flask import Flask, request
 from os import getenv, remove
 from gunicorn.app.base import BaseApplication
-import asyncio
+from multiprocessing import Process
 
 # Note: Environment is provided in .env, but automatically loaded via docker compose.
 # There is no need for load_dotenv().
@@ -94,7 +94,7 @@ def main():
         FlaskApplication(app, options).run()
 
 
-async def transcribe_job(oid: ObjectId):
+def transcribe_job(oid: ObjectId):
     """Takes base53 object ID and starts a transcription job asynchronously."""
     # Get pickled opus audio data from database
     db_audio = DB.transcriptions_DB.transcriptions.find_one({"_id": oid})["audio"]
@@ -129,7 +129,8 @@ def transcribe():
         assert DB.transcriptions_DB.transcriptions.find_one({"_id": oid}) is not None
     except AssertionError:
         return ("", 404)
-    asyncio.run(transcribe_job(oid))
+    # Run the transcription job (note that the web app prevents duplicate requests)
+    Process(target=transcribe_job, args=(oid,)).start()
     return ("", 202)
 
 
