@@ -1,0 +1,10 @@
+services:
+  #web:
+  # FIXME: Blocked on web app ( @Seolin )
+  ml:
+    image: teamnameunavailable/machine-learning-client:latest.dockerfile_compose_for_mongo_ml
+    ports:
+      - "80:80"
+  #mongo:
+    # FIXME: @Erick, add in configuration for mongo, but do not include environment variables
+    # FIXME: Refer to https://hub.docker.com/_/mongo and customize to your configuration
