@@ -8,6 +8,6 @@ COPY ../Pipfile.lock .
 RUN pip install pipenv
 RUN pipenv install --system --deploy
 
-COPY "./ml_client.py" .
+COPY ml_client.py .
 
 CMD ["python", "ml_client.py"]
