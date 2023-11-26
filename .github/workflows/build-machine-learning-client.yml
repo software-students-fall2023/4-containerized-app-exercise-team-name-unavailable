@@ -20,15 +20,15 @@ jobs:
         run: |
             # To reference the latest on a non-trunk branch, use machine-learning-client:latest.sanitized_ref
             if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-              docker buildx build --load --tag ghcr.io/${{ github.repository }}/machine-learning-client:$(date +%s) --tag ghcr.io/${{ github.repository }}/machine-learning-client:${{ github.sha }} --tag ghcr.io/${{ github.repository }}/machine-learning-client:latest --file ./machine-learning-client/Dockerfile .
+              docker buildx build --load --tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/machine-learning-client:$(date +%s) --tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/machine-learning-client:${{ github.sha }} --tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/machine-learning-client:latest --file ./machine-learning-client/Dockerfile .
             else
               # In a separate variable, replace all special characters in ${{ github.ref }} (except '-' and '.') with '_', and remove the 'refs/heads/' prefix
               sanitized_ref=$(echo "${{ github.ref }}" | sed -E 's/[^a-zA-Z0-9_.-]+/_/g' | sed -E 's/^refs_heads_//g')
-              docker buildx build --load --tag ghcr.io/${{ github.repository }}/machine-learning-client:$(date +%s) --tag ghcr.io/${{ github.repository }}/machine-learning-client:${{ github.sha }} --tag ghcr.io/${{ github.repository }}/machine-learning-client:latest.$sanitized_ref --file ./machine-learning-client/Dockerfile .
+              docker buildx build --load --tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/machine-learning-client:$(date +%s) --tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/machine-learning-client:${{ github.sha }} --tag ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/machine-learning-client:latest.$sanitized_ref --file ./machine-learning-client/Dockerfile .
             fi
 
       - name: Log in to GitHub Packages
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push Docker image to Container Registry using commit hash
-        run: docker push ghcr.io/${{ github.repository }}/machine-learning-client:${{ github.sha }}
+        run: docker push ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/machine-learning-client:${{ github.sha }}
