@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - '*'
+    paths:
+      - 'machine-learning-client/**'
 
 jobs:
   build:
