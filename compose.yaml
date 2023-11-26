@@ -1,0 +1,6 @@
+services:
+  #web:
+  # FIXME: Blocked on web app
+  ml:
+    
+  mongo:
