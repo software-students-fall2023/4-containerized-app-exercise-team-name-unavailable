@@ -8,6 +8,7 @@ import base64
 import pymongo
 import datetime
 import requests
+import pickle
 
 oidtob62 = lambda oid: base64.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base64.decodebytes(b62))
@@ -42,8 +43,8 @@ def login():
 def upload():
     """Takes Opus audio from request body and saves it in database,
     along with recording name `name` and username `username`"""
-    # get audio from request body
-    audio = request.data
+    # get audio from request body (multipart/form-data), pickle it
+    audio = pickle.dumps(request.files['audio'].read())
     # get name and username from request body
     name = request.form["name"]
     username = request.form["username"]
