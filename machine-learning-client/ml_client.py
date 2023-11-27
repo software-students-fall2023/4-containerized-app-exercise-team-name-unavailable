@@ -99,30 +99,31 @@ def transcribe_job(oid: ObjectId):
     """Takes base53 object ID and starts a transcription job asynchronously."""
     # Get pickled opus audio data from database
     db_audio = DB.recordings.find_one({"_id": oid})["audio"]
+    filename = oidtob62(oid)
     # Write to .opus file
-    with open(f"{oid}.opus", "wb") as f:
+    with open(f"{filename}.opus", "wb") as f:
         f.write(pickle.loads(db_audio))
     model = whisper.load_model("tiny.en")
     model.device = device("cpu")
-    # Transcribe audio into f"{oid}.srt" using transcribe() and get_writer()
+    # Transcribe audio into f"{filename}.srt" using transcribe() and get_writer()
     raw_transcription = whisper.transcribe(
         model,
-        f"{oid}.opus",
+        f"{filename}.opus",
     )
     write_to_srt(raw_transcription)
-    # Put contents of f"{oid}.srt" into same document, and set finished to true
-    with open(f"{oid}.srt", "r", encoding="utf-8") as f:
+    # Put contents of f"{filename}.srt" into same document, and set finished to true
+    with open(f"{filename}.srt", "r", encoding="utf-8") as f:
         DB.recordings.update_one(
             {"_id": oid}, {"$set": {"transcript": f.read(), "finished": True}}
         )
     # Remove .opus and .srt files
-    remove(f"{oid}.opus")
-    remove(f"{oid}.srt")
+    remove(f"{filename}.opus")
+    remove(f"{filename}.srt")
 
 
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
-    """Takes base53 object ID from request body and starts a transcription job."""
+    """Takes base53 object ID from request form and starts a transcription job."""
     # Get object ID from request
     oid = b62tooid(request.form["id"])
     # Check that database has object ID
