@@ -7,6 +7,7 @@ import os
 import base64
 import pymongo
 import datetime
+import requests
 
 oidtob62 = lambda oid: base64.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base64.decodebytes(b62))
@@ -22,12 +23,12 @@ def main():
     """Launches public-facing user interface for dictation app."""
     # connect to database
     global DB
-    DB = pymongo.MongoClient(
+    client = pymongo.MongoClient(
         "mongodb://mongo:27017",
         username=getenv("MONGO_USER"),
         password=getenv("MONGO_PASSWORD"),
     )
-
+    DB = client["recordings"]
     app.run(ssl_context=("cert.pem", "key.pem"))
 
 
@@ -47,7 +48,7 @@ def upload():
     name = request.form["name"]
     username = request.form["username"]
     # save audio in database
-    DB["recordings"].insert_one(
+    oid = DB["recordings"].insert_one(
         {
             "name": name,
             "username": username,
@@ -55,8 +56,13 @@ def upload():
             "date": datetime.datetime.utcnow(),
         }
     )
-    # TODO: Notify machine learning client with object id of new recording
-    # TODO: Redirect user to "/listings"
+    requests.post(
+        "http://ml:80/transcribe",
+        data={"id": oidtob62(oid)},
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        timeout=5 # 5 seconds, should be good enough
+    )
+    return redirect("/listings")
 
 
 if __name__ == "__main__":
