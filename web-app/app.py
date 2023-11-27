@@ -15,10 +15,12 @@ template_dir = os.path.abspath('/templates')
 static_dir = os.path.abspath('/static')
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
+DB = None
+
 def main():
     # connect to database
-    global db
-    db = pymongo.MongoClient("mongodb://mongo:27017",
+    global DB
+    DB = pymongo.MongoClient("mongodb://mongo:27017",
                             username=getenv("MONGO_USER"),
                             password=getenv("MONGO_PASSWORD"),
     )
@@ -27,3 +29,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
