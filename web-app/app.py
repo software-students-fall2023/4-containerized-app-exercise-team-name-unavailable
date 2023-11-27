@@ -30,7 +30,7 @@ def main():
         password=getenv("MONGO_PASSWORD"),
     )
     DB = client["recordings"]
-    app.run(ssl_context=("cert.pem", "key.pem"))
+    app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
 
 
 @app.route("/")
