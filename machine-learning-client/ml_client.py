@@ -49,11 +49,12 @@ def main():
     """Connects to database and launches Flask app,
     under the assumption that this app is closed off from WAN."""
     global DB
-    DB = MongoClient(
+    client = MongoClient(
         "mongoDB://mongo:27017",
         username=getenv("MONGO_USER"),
         password=getenv("MONGO_PASSWORD"),
     )
+    DB = client["recordings"]
     try:
         assert getenv("FLASK_STAGE") in ["production", "development"]
     except AssertionError:
@@ -97,7 +98,7 @@ def main():
 def transcribe_job(oid: ObjectId):
     """Takes base53 object ID and starts a transcription job asynchronously."""
     # Get pickled opus audio data from database
-    db_audio = DB.transcriptions_DB.transcriptions.find_one({"_id": oid})["audio"]
+    db_audio = DB.recordings.find_one({"_id": oid})["audio"]
     # Write to .opus file
     with open(f"{oid}.opus", "wb") as f:
         f.write(pickle.loads(db_audio))
@@ -111,7 +112,7 @@ def transcribe_job(oid: ObjectId):
     write_to_srt(raw_transcription)
     # Put contents of f"{oid}.srt" into same document, and set finished to true
     with open(f"{oid}.srt", "r", encoding="utf-8") as f:
-        DB.transcriptions_DB.transcriptions.update_one(
+        DB.recordings.update_one(
             {"_id": oid}, {"$set": {"transcript": f.read(), "finished": True}}
         )
     # Remove .opus and .srt files
@@ -126,7 +127,7 @@ def transcribe():
     oid = b62tooid(request.form["id"])
     # Check that database has object ID
     try:
-        assert DB.transcriptions_DB.transcriptions.find_one({"_id": oid}) is not None
+        assert DB.recordings.find_one({"_id": oid}) is not None
     except AssertionError:
         return ("", 404)
     # Run the transcription job (note that the web app prevents duplicate requests)
