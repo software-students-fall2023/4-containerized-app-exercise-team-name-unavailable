@@ -44,7 +44,7 @@ def upload():
     """Takes Opus audio from request body and saves it in database,
     along with recording name `name` and username `username`"""
     # get audio from request body (multipart/form-data), pickle it
-    audio = pickle.dumps(request.files['audio'].read())
+    audio = pickle.dumps(request.files["audio"].read())
     # get name and username from request body
     name = request.form["name"]
     username = request.form["username"]
@@ -61,7 +61,7 @@ def upload():
         "http://ml:80/transcribe",
         data={"id": oidtob62(oid)},
         headers={"Content-Type": "application/x-www-form-urlencoded"},
-        timeout=5 # 5 seconds, should be good enough
+        timeout=5,  # 5 seconds, should be good enough
     )
     return redirect("/listings")
 
