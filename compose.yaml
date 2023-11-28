@@ -5,8 +5,11 @@ services:
     image: teamnameunavailable/machine-learning-client:latest.dockerfile_compose_for_mongo_ml
     ports:
       - "80:80"
-  mongo:
-    image: mongo
+  mongodb:
+    build: ./mongodb
+    container_name: mongodb
     ports:
       - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
     
