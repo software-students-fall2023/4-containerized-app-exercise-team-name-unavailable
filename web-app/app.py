@@ -63,7 +63,7 @@ def upload():
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         timeout=5,  # 5 seconds, should be good enough
     )
-    return redirect("/listings")
+    return 202
 
 
 if __name__ == "__main__":
