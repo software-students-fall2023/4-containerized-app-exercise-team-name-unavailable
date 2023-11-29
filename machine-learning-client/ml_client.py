@@ -1,9 +1,6 @@
-import sys
-
 # Web stuff
 from flask import Flask, request
 from os import getenv, remove
-from gunicorn.app.base import BaseApplication
 from multiprocessing import Process
 
 # Note: Environment is provided in .env, but automatically loaded via docker compose.
