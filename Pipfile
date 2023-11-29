@@ -19,6 +19,7 @@ pybase62 = "*"
 pytest = "*"
 torch = {version="*", index="pytorch"}
 gunicorn = "*"
+requests = "*"
 
 [dev-packages]
 
