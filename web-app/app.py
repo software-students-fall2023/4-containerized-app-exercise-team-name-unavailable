@@ -55,7 +55,7 @@ def upload():
             "name": name,
             "username": username,
             "audio": audio,
-            "date": datetime.datetime.utcnow(),
+            "created": datetime.datetime.utcnow(),
         }
     )
     requests.post(
@@ -66,6 +66,32 @@ def upload():
     )
     return 202
 
+@app.route("/record")
+def record():
+    """Returns recording page."""
+    return render_template("record.html", username=request.args.get("username"))
+
+@app.route("/audio/<oid_b62>")
+def audio(oid_b62):
+    """Returns audio file for recording with id `oid_b62`."""
+    oid = b62tooid(oid_b62)
+    recording = DB["recordings"].find_one({"_id": oid})
+    if recording is None:
+        return redirect("/404")
+    return pickle.loads(recording["audio"])
+
+@app.route("/transcript/<oid_b62>")
+def transcript(oid_b62):
+    """Returns transcript page for recording with id `oid_b62`."""
+    oid = b62tooid(oid_b62)
+    # Get everything from recording document except audio
+    recording = DB["recordings"].find_one({"_id": oid}, {"audio": 0})
+    recording["id"] = oid_b62
+    if recording is None:
+        return redirect("/404")
+    # Format creation date
+    recording["created"] = recording["created"].strftime("%A, %B %d %Y, %I:%M:%S %p")
+    return render_template("transcript.html", recording=recording)
 
 if __name__ == "__main__":
     main()
