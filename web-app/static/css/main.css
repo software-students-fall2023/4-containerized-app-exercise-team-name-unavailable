@@ -1,6 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto');
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed');
-
 
 body {
     background-color: #E5E4E2;
@@ -23,13 +21,13 @@ input[type=text] {
 }
 
 input[type=submit] {
-    font-family: "Roboto-Condensed", sans-serif;
+    font-family: "Roboto", sans-serif;
     color: #71797E;
     border-color: #71797E;
     background-color: #E8998D;
     font-size: 22px;
-    border-style: solid;
     font-style: bold;
+    border-style: solid;
 }
 
 h1 {
