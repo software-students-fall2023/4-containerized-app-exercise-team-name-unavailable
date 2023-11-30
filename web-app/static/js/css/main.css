@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Hedvig+Letters+Sans');
+
+h1 {
+    font-family: Hedvig-Letter-Sans;
+    font-style: bold;
+    color: #71797E;
+}
+
+p {
+    color: red;
+}

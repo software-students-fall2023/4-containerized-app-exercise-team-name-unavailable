@@ -13,12 +13,11 @@ import pickle
 oidtob62 = lambda oid: base64.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base64.decodebytes(b62))
 
-template_dir = os.path.abspath("/templates")
-static_dir = os.path.abspath("/static")
+template_dir = os.path.abspath("./templates")
+static_dir = os.path.abspath("./static")
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 DB = None
-
 
 def main():
     """Launches public-facing user interface for dictation app."""
@@ -30,14 +29,13 @@ def main():
         password=getenv("MONGO_PASSWORD"),
     )
     DB = client["recordings"]
-    app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
-
+    # app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
+    app.run(host="0.0.0.0", port=443)
 
 @app.route("/")
 def login():
     """Returns login page."""
     return render_template("login.html")
-
 
 @app.route("/upload", methods=["POST"])
 def upload():
