@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, Response, render_template, request, redirect
 
 from os import getenv
 from bson.objectid import ObjectId
@@ -72,13 +72,15 @@ def record():
     return render_template("record.html", username=request.args.get("username"))
 
 @app.route("/audio/<oid_b62>")
-def audio(oid_b62):
+def get_audio(oid_b62):
     """Returns audio file for recording with id `oid_b62`."""
     oid = b62tooid(oid_b62)
     recording = DB["recordings"].find_one({"_id": oid})
     if recording is None:
         return redirect("/404")
-    return pickle.loads(recording["audio"])
+    audio = pickle.loads(recording["audio"])
+    # Set MIME type to audio/ogg and return audio
+    return Response(audio, mimetype="audio/ogg")
 
 @app.route("/transcript/<oid_b62>")
 def transcript(oid_b62):
