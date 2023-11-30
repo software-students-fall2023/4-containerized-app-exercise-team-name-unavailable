@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a Recording</title>
+    <link rel="stylesheet" href="../css/makeRecordings.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Make a Recording</h1>
+        <form id="recordingForm">
+            <label for="recordingName">Recording Name:</label>
+            <input type="text" id="recordingName" name="recordingName" required>
+
+            <button type="button" id="startRecording">Start Recording</button>
+            <button type="button" id="stopRecording" disabled>Stop Recording</button>
+
+            <input type="submit" value="Upload Recording">
+        </form>
+
+        <audio id="audioPlayback" controls></audio>
+    </div>
+
+    <script src="../js/makeRecordings.js"></script>
+</body>
+</html>
