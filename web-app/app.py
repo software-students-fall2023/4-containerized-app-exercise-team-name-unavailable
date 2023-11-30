@@ -19,7 +19,6 @@ app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 DB = None
 
-
 def main():
     """Launches public-facing user interface for dictation app."""
     # connect to database
@@ -38,7 +37,6 @@ def login():
     """Returns login page."""
     return render_template("login.html")
 
-''''''
 @app.route("/upload", methods=["POST"])
 def upload():
     """Takes Opus audio from request body and saves it in database,
