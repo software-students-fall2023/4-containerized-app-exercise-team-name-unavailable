@@ -23,13 +23,22 @@ input[type=text] {
 }
 
 input[type=submit] {
+<<<<<<< HEAD
     font-family: "Roboto+Condensed", sans-serif;
+=======
+    font-family: "Roboto-Condensed", sans-serif;
+>>>>>>> 5303f7d (catching up with the web-app branch manually after merge conflicts)
     color: #71797E;
     border-color: #71797E;
     background-color: #E8998D;
     font-size: 22px;
+<<<<<<< HEAD
     font-style: bold;
     border-style: solid;
+=======
+    border-style: solid;
+    font-style: bold;
+>>>>>>> 5303f7d (catching up with the web-app branch manually after merge conflicts)
 }
 
 h1 {
@@ -37,4 +46,8 @@ h1 {
     color: #71797E;
     font-size: 36px;
     font-stretch: expanded; 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5303f7d (catching up with the web-app branch manually after merge conflicts)
