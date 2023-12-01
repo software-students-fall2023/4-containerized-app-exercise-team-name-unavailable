@@ -99,6 +99,8 @@ def transcript(oid_b62):
     recording["id"] = oid_b62
     # Format creation date
     recording["created"] = recording["created"].strftime("%A, %B %d %Y, %I:%M:%S %p")
+    if not recording["finished"]:
+        recording["transcript"] = "Transcription in progress..."
     return render_template("transcript.html", recording=recording)
 
 
