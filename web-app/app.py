@@ -69,10 +69,12 @@ def upload():
     )
     return 202
 
+
 @app.route("/record")
 def record():
     """Returns recording page."""
     return render_template("record.html")
+
 
 @app.route("/audio/<oid_b62>")
 def get_audio(oid_b62):
@@ -84,6 +86,7 @@ def get_audio(oid_b62):
     audio = pickle.loads(recording["audio"])
     # Set MIME type to audio/ogg and return audio
     return Response(audio, mimetype="audio/ogg")
+
 
 @app.route("/transcript/<oid_b62>")
 def transcript(oid_b62):
@@ -97,6 +100,7 @@ def transcript(oid_b62):
     # Format creation date
     recording["created"] = recording["created"].strftime("%A, %B %d %Y, %I:%M:%S %p")
     return render_template("transcript.html", recording=recording)
+
 
 if __name__ == "__main__":
     main()
