@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Make a Recording</title>
     <link rel="stylesheet" href="../css/makeRecordings.css">
+    <script src="https://cdn.jsdelivr.net/npm/opus-recorder@8/dist/recorder.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Make a Recording</h1>
         <form id="recordingForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
             <label for="recordingName">Recording Name:</label>
             <input type="text" id="recordingName" name="recordingName" required>
 
@@ -19,7 +23,7 @@
             <input type="submit" value="Upload Recording">
         </form>
 
-        <audio id="audioPlayback" controls></audio>
+        <audio id="audioPlayback" controls style="display:none;"></audio>
     </div>
 
     <script src="../js/makeRecordings.js"></script>
