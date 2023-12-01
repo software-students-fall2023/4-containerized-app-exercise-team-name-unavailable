@@ -38,9 +38,9 @@ document.getElementById('recordingForm').addEventListener('submit', function(e) 
     }
 
     let formData = new FormData();
-    formData.append('audio.opus', window.audioBlob, 'audio.opus');
+    formData.append('audio', window.audioBlob, 'audio.opus');
     formData.append('username', document.getElementById('username').value);
-    formData.append('name', document.getElementById('recordingName').value);
+    formData.append('name', document.getElementById('name').value);
 
     fetch('/upload', {
       method: 'POST',

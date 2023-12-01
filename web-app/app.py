@@ -34,8 +34,6 @@ def main():
     DB = client["recordings"]
     # app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
     app.run(host="0.0.0.0", port=443)
-    # app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
-    app.run(host="0.0.0.0", port=443)
 
 
 @app.route("/")
@@ -93,9 +91,9 @@ def transcript(oid_b62):
     oid = b62tooid(oid_b62)
     # Get everything from recording document except audio
     recording = DB["recordings"].find_one({"_id": oid}, {"audio": 0})
-    recording["id"] = oid_b62
     if recording is None:
         return redirect("/404")
+    recording["id"] = oid_b62
     # Format creation date
     recording["created"] = recording["created"].strftime("%A, %B %d %Y, %I:%M:%S %p")
     return render_template("transcript.html", recording=recording)
