@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <title> Recording </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+
+<body>
+    <h1> {{ recording.name }} </h1>
+    <p> {{ recording.created }} </p>
+    <audio controls>
+        <source src="/audio/{{recording.id}}" typ="audio/ogg">
+    </audio>
+    <pre> {{ recording.transcript }} </pre>
+    <a href="/listings?username={{ recording.username }}">back to listings</a>
+</body>
+
+
+</html>
