@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, Response, render_template, request, redirect
 
 from os import getenv
 from bson.objectid import ObjectId
@@ -13,6 +13,8 @@ import pickle
 oidtob62 = lambda oid: base64.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base64.decodebytes(b62))
 
+template_dir = os.path.abspath("./templates")
+static_dir = os.path.abspath("./static")
 template_dir = os.path.abspath("./templates")
 static_dir = os.path.abspath("./static")
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
@@ -30,6 +32,8 @@ def main():
         password=getenv("MONGO_PASSWORD"),
     )
     DB = client["recordings"]
+    # app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
+    app.run(host="0.0.0.0", port=443)
     # app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
     app.run(host="0.0.0.0", port=443)
 
@@ -55,7 +59,8 @@ def upload():
             "name": name,
             "username": username,
             "audio": audio,
-            "date": datetime.datetime.utcnow(),
+            "finished": False,
+            "created": datetime.datetime.utcnow(),
         }
     )
     requests.post(
@@ -66,6 +71,34 @@ def upload():
     )
     return 202
 
+@app.route("/record")
+def record():
+    """Returns recording page."""
+    return render_template("record.html")
+
+@app.route("/audio/<oid_b62>")
+def get_audio(oid_b62):
+    """Returns audio file for recording with id `oid_b62`."""
+    oid = b62tooid(oid_b62)
+    recording = DB["recordings"].find_one({"_id": oid})
+    if recording is None:
+        return redirect("/404")
+    audio = pickle.loads(recording["audio"])
+    # Set MIME type to audio/ogg and return audio
+    return Response(audio, mimetype="audio/ogg")
+
+@app.route("/transcript/<oid_b62>")
+def transcript(oid_b62):
+    """Returns transcript page for recording with id `oid_b62`."""
+    oid = b62tooid(oid_b62)
+    # Get everything from recording document except audio
+    recording = DB["recordings"].find_one({"_id": oid}, {"audio": 0})
+    recording["id"] = oid_b62
+    if recording is None:
+        return redirect("/404")
+    # Format creation date
+    recording["created"] = recording["created"].strftime("%A, %B %d %Y, %I:%M:%S %p")
+    return render_template("transcript.html", recording=recording)
 
 if __name__ == "__main__":
     main()
