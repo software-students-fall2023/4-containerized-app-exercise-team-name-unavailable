@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Make a Recording</title>
-    <link rel="stylesheet" href="../css/makeRecordings.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/makeRecordings.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/opus-recorder@8/dist/recorder.min.js"></script>
 </head>
 <body>
@@ -26,6 +26,6 @@
         <audio id="audioPlayback" controls style="display:none;"></audio>
     </div>
 
-    <script src="../js/makeRecordings.js"></script>
+    <script src="{{ url_for('static', filename='js/makeRecordings.js') }}"></script>
 </body>
 </html>
