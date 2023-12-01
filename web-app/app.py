@@ -55,6 +55,7 @@ def upload():
             "name": name,
             "username": username,
             "audio": audio,
+            "finished": False,
             "created": datetime.datetime.utcnow(),
         }
     )
