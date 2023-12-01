@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request
 
 from os import getenv
 from bson.objectid import ObjectId
@@ -19,6 +19,7 @@ app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 DB = None
 
+
 def main():
     """Launches public-facing user interface for dictation app."""
     # connect to database
@@ -32,10 +33,12 @@ def main():
     # app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
     app.run(host="0.0.0.0", port=443)
 
+
 @app.route("/")
 def login():
     """Returns login page."""
     return render_template("login.html")
+
 
 @app.route("/upload", methods=["POST"])
 def upload():
