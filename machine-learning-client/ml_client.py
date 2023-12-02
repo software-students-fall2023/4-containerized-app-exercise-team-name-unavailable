@@ -1,9 +1,6 @@
-import sys
-
 # Web stuff
 from flask import Flask, request
 from os import getenv, remove
-from gunicorn.app.base import BaseApplication
 from multiprocessing import Process
 
 # Note: Environment is provided in .env, but automatically loaded via docker compose.
@@ -55,44 +52,7 @@ def main():
         password=getenv("MONGO_PASSWORD"),
     )
     DB = client["recordings"]
-    try:
-        assert getenv("FLASK_STAGE") in ["production", "development"]
-    except AssertionError:
-        print("FLASK_STAGE must be either 'production' or 'development'")
-        sys.exit(1)
-    if getenv("FLASK_STAGE") == "development":
-        app.run(host="0.0.0.0", port=80, debug=True, load_dotenv=False)
-    else:  # if production
-        # Use gunicorn
-        class FlaskApplication(BaseApplication):
-            """Custom gunicorn application."""
-
-            def __init__(self, application, options=None):
-                self.options = options or {}
-                self.application = application
-                super().__init__()
-
-            def init(self, parser, opts, args):
-                """Unused init function."""
-                pass
-
-            def load_config(self):
-                """Sets gunicorn config."""
-                for key, value in self.options.items():
-                    self.cfg.set(key, value)
-
-            def load(self):
-                """Returns the Flask application."""
-                return self.application
-
-        options = {
-            "bind": "0.0.0.0:80",
-            "workers": 1,
-            "threads": 1,
-            "worker_class": "sync",
-        }
-
-        FlaskApplication(app, options).run()
+    app.run(host="0.0.0.0", port=80, debug=True, load_dotenv=False)
 
 
 def transcribe_job(oid: ObjectId):
