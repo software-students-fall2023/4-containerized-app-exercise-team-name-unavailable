@@ -15,8 +15,6 @@ b62tooid = lambda b62: ObjectId(base62.decodebytes(b62).hex())
 
 template_dir = os.path.abspath("./templates")
 static_dir = os.path.abspath("./static")
-template_dir = os.path.abspath("./templates")
-static_dir = os.path.abspath("./static")
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 DB = None
@@ -32,8 +30,7 @@ def main():
         password=getenv("MONGO_PASSWORD"),
     )
     DB = client["recordings"]
-    # app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
-    app.run(host="0.0.0.0", port=443)
+    app.run(host="0.0.0.0", port=443, ssl_context=("certs/cert.pem", "certs/key.pem"))
 
 
 @app.route("/")
@@ -73,7 +70,7 @@ def upload():
 @app.route("/record")
 def record():
     """Returns recording page."""
-    return render_template("record.html")
+    return render_template("makeRecordings.html")
 
 
 @app.route("/audio/<oid_b62>")
