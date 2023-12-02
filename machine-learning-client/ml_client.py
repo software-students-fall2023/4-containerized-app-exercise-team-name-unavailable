@@ -69,7 +69,8 @@ def transcribe_job(oid: ObjectId):
         model,
         f"{filename}.opus",
     )
-    write_to_srt(raw_transcription)
+    writer = get_writer("srt", ".")
+    writer(raw_transcription, **default_writer_args)
     # Put contents of f"{filename}.srt" into same document, and set finished to true
     with open(f"{filename}.srt", "r", encoding="utf-8") as f:
         DB.recordings.update_one(
