@@ -31,7 +31,7 @@ def main():
     )
     DB = client["recordings"]
     app.run(host="0.0.0.0", port=443, ssl_context=("certs/cert.pem", "certs/key.pem"))
-
+    # app.run(host="0.0.0.0", port=5000, debug=True)
 
 @app.route("/")
 def login():
@@ -95,7 +95,7 @@ def download_audio(oid_b62):
     audio = pickle.loads(recording["audio"])
     return send_file(
         audio,
-        attachment_filename="audio.opus",
+        download_name=f"{recording['name']}.opus",
         as_attachment=True,
         mimetype="audio/ogg",
     )
@@ -133,7 +133,7 @@ def listings():
         recording["created"] = recording["created"].strftime(
             "%A, %B %d %Y, %I:%M:%S %p"
         )
-    return render_template("listings.html", recordings=recordings)
+    return render_template("listings.html", username=username, recordings=recordings)
 
 
 if __name__ == "__main__":
