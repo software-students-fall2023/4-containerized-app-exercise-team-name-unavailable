@@ -13,7 +13,7 @@
     <h1> {{ recording.name }} </h1>
     <p> {{ recording.created }} </p>
     <audio controls>
-        <source src="/audio/{{recording.id}}" typ="audio/ogg">
+        <source src="/audio/{{recording.id}}" type="audio/ogg">
     </audio>
     <pre> {{ recording.transcript }} </pre>
     <a href="/listings?username={{ recording.username }}">back to listings</a>
