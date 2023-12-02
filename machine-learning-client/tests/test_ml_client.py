@@ -85,15 +85,14 @@ def test_transcribe_job():
 def test_transcribe_202(client, monkeypatch):
 
     ml_client.DB = mongomock.MongoClient().recordings
-    exist_oid = b62tooid("ejBdVtObtsZBmMr0")
+    exist_oid = "ejBdVtObtsZBmMr0"
 
     def mock_find_one(*args, **kwargs):
-        if args[0]["_id"] == exist_oid:
-            return {"_id": exist_oid}
+        if oidtob62(args[0]["_id"]) == exist_oid:
+            return {"_id": args[0]["_id"]}
         return None
 
-    monkeypatch.setattr(ml_client.DB, "find_one", mock_find_one)
-
+    monkeypatch.setattr(ml_client.DB.recordings, "find_one", mock_find_one)
     response = client.post("/transcribe", data={"id": exist_oid})
 
     assert response.status_code == 202

@@ -4,14 +4,14 @@ from os import getenv
 from bson.objectid import ObjectId
 
 import os
-import base64
+import base62
 import pymongo
 import datetime
 import requests
 import pickle
 
-oidtob62 = lambda oid: base64.encodebytes(oid.binary)
-b62tooid = lambda b62: ObjectId(base64.decodebytes(b62))
+oidtob62 = lambda oid: base62.encodebytes(oid.binary)
+b62tooid = lambda b62: ObjectId(base62.decodebytes(b62).hex())
 
 template_dir = os.path.abspath("./templates")
 static_dir = os.path.abspath("./static")

@@ -36,7 +36,7 @@ from bson.objectid import ObjectId
 
 
 oidtob62 = lambda oid: base62.encodebytes(oid.binary)
-b62tooid = lambda b62: ObjectId(base62.decodebytes(b62))
+b62tooid = lambda b62: ObjectId(base62.decodebytes(b62).hex())
 
 DB = None
 
@@ -84,7 +84,6 @@ def transcribe_job(oid: ObjectId):
 def transcribe():
     """Takes base62 object ID from request form and starts a transcription job."""
     # Get object ID from request
-    print(type(request.form["id"]))
     oid = b62tooid(request.form["id"])
     # Check that database has object ID
     try:
