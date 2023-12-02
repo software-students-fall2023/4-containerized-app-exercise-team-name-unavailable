@@ -1,5 +1,7 @@
 import pytest
 import os
+import ml_client
+import mongomock
 
 from ml_client import *
 
@@ -11,7 +13,7 @@ def client(monkeypatch):
     with app.test_client() as client:
         yield client
 
-
+@pytest.fixture
 def mock_get_writer(monkeypatch):
     def mock_writer(format, path):
         def write_to_file(transcription, **kwargs):
@@ -22,8 +24,25 @@ def mock_get_writer(monkeypatch):
 
     monkeypatch.setattr(whisper.utils, "get_writer", mock_writer)
 
+@pytest.fixture
+def patch_mongo(monkeypatch):
+    db = mongomock.MongoClient()
+    def fake_mongo():
+        return db
+    monkeypatch.setattr('ml_client.client', fake_mongo)
 
-def test_write_to_srt(mock_get_writer):
+
+def test_write_to_srt(mock_get_writer, monkeypatch):
+
+    #mock_default_writer_args = {
+    #   "highlight_words": False,
+    #    "max_line_count": None,
+    #    "max_line_width": None,
+    #    "max_words_per_line": None,
+    #}
+
+    #monkeypatch.setattr(ml_client, "default_writer_args", mock_default_writer_args)
+
     raw_transcript = "This is a test"
 
     write_to_srt(raw_transcript)
@@ -35,8 +54,28 @@ def test_write_to_srt(mock_get_writer):
     os.remove("test_output.srt")
 
 
-def test_main():
-    pass
+
+class MockMongoClient:
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __getitem__(self, item):
+        return {}  # You can customize this mock as needed
+
+class MockFlaskApp:
+    @staticmethod
+    def run(**kwargs):
+        pass
+
+def test_main_function(monkeypatch):
+    monkeypatch.setenv("MONGO_USER", "test_user")
+    monkeypatch.setenv("MONGO_PASSWORD", "test_password")
+
+    monkeypatch.setattr('ml_client.MongoClient', MockMongoClient)
+
+    monkeypatch.setattr('ml_client.app.run', MockFlaskApp.run)
+
+    main()
 
 
 def test_transcribe_job():
@@ -51,7 +90,7 @@ def test_transcribe_202(client, monkeypatch):
             return {"_id": exist_oid}
         return None
 
-    monkeypatch.setattr(DB.transcriptions_DB.transcriptions, "find_one", mock_find_one)
+    monkeypatch.setattr(ml_client.DB, "find_one", mock_find_one)
 
     response = client.post("/transcribe", data={"id": exist_oid})
 
@@ -63,7 +102,6 @@ def test_transcribe_404(client, monkeypatch):
 
     def mock_find_one(*args, **kwargs):
         return None
-
     monkeypatch.setattr(DB.transcriptions_DB.transcriptions, "find_one", mock_find_one)
 
     response = client.post("/transcribe", data={"id": non_existing_oid})
