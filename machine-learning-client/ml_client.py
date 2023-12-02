@@ -23,20 +23,19 @@ default_writer_args = {
 
 
 def write_to_srt(raw_transcription):
-    """Takes output from whipser.transcribe() and writes it to an .srt file for later upload."""
+    """Takes output from whisper.transcribe() and writes it to an .srt file for later upload."""
     writer = get_writer("srt", ".")
     writer(raw_transcription, **default_writer_args)
 
 
 # Database stuff
-import base64
 import base62
 import pickle
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
 
-oidtob62 = lambda oid: base64.encodebytes(oid.binary)
+oidtob62 = lambda oid: base62.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base62.decodebytes(b62))
 
 DB = None
@@ -56,7 +55,7 @@ def main():
 
 
 def transcribe_job(oid: ObjectId):
-    """Takes base53 object ID and starts a transcription job asynchronously."""
+    """Takes base62 object ID and starts a transcription job asynchronously."""
     # Get pickled opus audio data from database
     db_audio = DB.recordings.find_one({"_id": oid})["audio"]
     filename = oidtob62(oid)
@@ -83,8 +82,9 @@ def transcribe_job(oid: ObjectId):
 
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
-    """Takes base53 object ID from request form and starts a transcription job."""
+    """Takes base62 object ID from request form and starts a transcription job."""
     # Get object ID from request
+    print(type(request.form["id"]))
     oid = b62tooid(request.form["id"])
     # Check that database has object ID
     try:
