@@ -1,6 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto');
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter');
 
 body {
     background-color: #E5E4E2;
@@ -13,28 +11,30 @@ body {
     height: 80vh;
 }
 
+h1 {
+    font-family: "Inter", sans-serif;
+    color: #71797E;
+    font-size: 36px;
+    font-stretch: expanded;
+    margin-bottom: 15px;
+}
+
 input[type=text] {
-    font-family: "Roboto", sans-serif;
+    font-family: "Inter", sans-serif;
     color: #71797E;
     border-color: #71797E;
     font-size: 22px;
     border-style: solid;
     margin-bottom: 15px;
+    width: 100%;
 }
 
 input[type=submit] {
-    font-family: "Roboto+Condensed", sans-serif;
+    font-family: "Inter", sans-serif;
     color: #71797E;
     border-color: #71797E;
     background-color: #E8998D;
     font-size: 22px;
     border-style: solid;
     font-style: bold;
-}
-
-h1 {
-    font-family: "Roboto", sans-serif;
-    color: #71797E;
-    font-size: 36px;
-    font-stretch: expanded;
 }
