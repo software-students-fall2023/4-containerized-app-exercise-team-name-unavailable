@@ -25,20 +25,8 @@ def test_login(client):
 
 def test_upload(client, monkeypatch):
     file = open("tests/test_audio.opus", "rb")
-    # class MockFiles:
-    #     def __init__(self):
-    #         self.file_data = {}
-
-    #     def __getitem__(self, key):
-    #         return self.file_data[key]
-
-    # mock_files = MockFiles()
-    # mock_files.file_data["audio"] = type('MockedFile', (), {'read': lambda self: b'testdata'})
 
     def mock_post(*args, **kwargs):
-        return "fakedata"
-
-    def mock_pickle_dump():
         return "fakedata"
 
     def mock_insert_one(*args, **kwargs):
@@ -46,42 +34,14 @@ def test_upload(client, monkeypatch):
 
     web_app.DB = mongomock.MongoClient().recordings
 
-    # monkeypatch.setattr(web_app.pickle, "dumps", mock_pickle_dump)
     monkeypatch.setattr(requests, "post", mock_post)
-    # monkeypatch.setattr(request,"files",mock_read)
-    # monkeypatch.setattr(os,"read",mock_read())
+
     monkeypatch.setattr(web_app.DB.recordings, "insert_one", mock_insert_one)
-    # monkeypatch.setattr(request.files,mock_files)
-    # monkeypatch.delattr(request.files["audio"].read())
-    # with web_app.app.test_request_context("/upload",method="POST", data={
-    #         "audio" : "asdf",
-    #         "name": "testName",
-    #         "username": "testUsername"
-    #     }):
-    #     monkeypatch.setattr("app.request.files", mock_files)
-    #     response = client.post(
-    #     "/upload",
-    #     data={
-    #         "audio" : "asdf",
-    #         "name": "testName",
-    #         "username": "testUsername"
-    #     }
-    # )
 
     response = client.post(
         "/upload",
         data={"audio": file, "name": "testName", "username": "testUsername"},
     )
-
-    # with client:
-    #     response = client.post(
-    #     "/upload",
-    #     data={
-    #         "audio" : "asdf",
-    #         "name": "testName",
-    #         "username": "testUsername"
-    #     }
-    # )
     assert response.status_code == 202
 
     file.close()
@@ -115,7 +75,7 @@ def test_get_audio(client, monkeypatch):
 
     def mock_find_one(*args, **kwargs):
         if oidtob62(args[0]["_id"]) == exist_oid:
-            return {"_id": args[0]["_id"],"audio":0}
+            return {"_id": args[0]["_id"], "audio": 0}
         return None
 
     def mock_pickle_loads(*args, **kwargs):
@@ -142,6 +102,23 @@ def test_transcript_404(client, monkeypatch):
     assert response.status_code == 404
 
 
-def test_transscript(client, monkeypatch):
+def test_download_audio_404(client, monkeypatch):
     web_app.DB = mongomock.MongoClient().recordings
-    pass
+
+    def mock_find_one(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(web_app.DB.recordings, "find_one", mock_find_one)
+    response = client.get("/download_audio/ejBdVtObtsZBmMr0", follow_redirects=True)
+    assert response.status_code == 404
+
+
+def test_listings_no_user(client):
+    response = client.get("/listings", follow_redirects=True)
+    assert response.status_code == 404
+
+
+def test_listings(client, monkeypatch):
+    web_app.DB = mongomock.MongoClient().recordings
+    response = client.get("/listings?username=test_user", follow_redirects=True)
+    assert response.status_code == 200
