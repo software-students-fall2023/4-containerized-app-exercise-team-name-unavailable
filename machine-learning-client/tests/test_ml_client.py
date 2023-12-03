@@ -80,6 +80,7 @@ def test_index(client):
     assert response.status_code == 204
     assert response.data == b""
 
+
 def test_main(monkeypatch):
     monkeypatch.setenv("MONGO_USER", "test_user")
     monkeypatch.setenv("MONGO_PASSWORD", "test_password")
@@ -107,10 +108,22 @@ def test_main(monkeypatch):
             def mock_create_collection(*args, **kwargs):
                 pass
 
-            monkeypatch.setattr(mock_mongo_client, "list_database_names", mock_list_database_names)
-            monkeypatch.setattr(mock_mongo_client["recordings"], "list_collection_names", mock_list_collection_names)
-            monkeypatch.setattr(mock_mongo_client, "create_database", mock_create_database)
-            monkeypatch.setattr(mock_mongo_client["recordings"], "create_collection", mock_create_collection)
+            monkeypatch.setattr(
+                mock_mongo_client, "list_database_names", mock_list_database_names
+            )
+            monkeypatch.setattr(
+                mock_mongo_client["recordings"],
+                "list_collection_names",
+                mock_list_collection_names,
+            )
+            monkeypatch.setattr(
+                mock_mongo_client, "create_database", mock_create_database
+            )
+            monkeypatch.setattr(
+                mock_mongo_client["recordings"],
+                "create_collection",
+                mock_create_collection,
+            )
 
             mock_app_run.assert_called_once_with(
                 host="0.0.0.0", port=80, debug=True, load_dotenv=False
