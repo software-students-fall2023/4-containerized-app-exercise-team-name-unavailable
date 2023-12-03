@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - "*"
-    paths:
-      - "machine-learning-client/**"
 
 jobs:
   build:
@@ -29,7 +27,11 @@ jobs:
           else
             # In a separate variable, replace all special characters in ${{ github.ref }} (except '-' and '.') with '_', and remove the 'refs/heads/' prefix
             sanitized_ref=$(echo "${{ github.ref }}" | sed -E 's/[^a-zA-Z0-9_.-]+/_/g' | sed -E 's/^refs_heads_//g')
-            docker buildx build --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:latest.$sanitized_ref --file ./machine-learning-client/Dockerfile .
+            if [[ -n $(git diff --name-only ${{ github.sha }} HEAD -- ./machine-learning-client) ]]; then
+              docker buildx build --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:latest.$sanitized_ref --file ./machine-learning-client/Dockerfile .
+            else
+              echo "No changes in /machine-learning-client directory. Skipping Docker build and push."
+            fi
           fi
   test_ml:
     runs-on: ubuntu-latest
