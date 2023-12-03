@@ -24,7 +24,7 @@ def test_login(client):
 
 
 def test_upload(client, monkeypatch):
-    file = open("tests/test_audio.opus", "rb")
+    file = open("web-app/tests/test_audio.opus", "rb")
 
     def mock_post(*args, **kwargs):
         return "fakedata"
