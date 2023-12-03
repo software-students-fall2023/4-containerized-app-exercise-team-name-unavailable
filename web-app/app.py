@@ -41,7 +41,7 @@ def main():
 @app.route("/")
 def login():
     """Returns login page."""
-    return render_template("login.html")
+    return render_template("templates/login.html")
 
 
 @app.route("/upload", methods=["POST"])
@@ -75,7 +75,7 @@ def upload():
 @app.route("/record")
 def record():
     """Returns recording page."""
-    return render_template("makeRecordings.html")
+    return render_template("templates/makeRecordings.html")
 
 
 @app.route("/audio/<oid_b62>")
@@ -119,7 +119,7 @@ def transcript(oid_b62):
     recording["created"] = recording["created"].strftime("%A, %B %d %Y, %I:%M:%S %p")
     if not recording["finished"]:
         recording["transcript"] = "Transcription in progress..."
-    return render_template("transcript.html", recording=recording)
+    return render_template("templates/transcript.html", recording=recording)
 
 
 @app.route("/listings")
@@ -138,7 +138,7 @@ def listings():
         recording["created"] = recording["created"].strftime(
             "%A, %B %d %Y, %I:%M:%S %p"
         )
-    return render_template("listings.html", username=username, recordings=recordings)
+    return render_template("templates/listings.html", username=username, recordings=recordings)
 
 
 if __name__ == "__main__":
