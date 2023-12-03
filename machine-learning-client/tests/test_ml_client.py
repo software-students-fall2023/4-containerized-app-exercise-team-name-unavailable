@@ -93,7 +93,7 @@ def test_main(monkeypatch):
             main()
 
             mock_mongo_client.assert_called_once_with(
-                "mongoDB://mongo:27017", username="test_user", password="test_password"
+                "mongodb://mongo:27017", username="test_user", password="test_password"
             )
 
             def mock_list_database_names(*args, **kwargs):
