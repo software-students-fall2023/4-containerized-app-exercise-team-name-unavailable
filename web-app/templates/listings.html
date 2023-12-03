@@ -9,7 +9,7 @@
 
 <body>
     <div class="container">
-        <h1>Recordings for {{ username }} </h1>
+        <h1>Recordings for: {{ username }} </h1>
         <div id="recordingsList">
             {% for recording in recordings %}
             <div class="recording">
@@ -20,7 +20,7 @@
                 {% else %}
                 <p><span class="recordingStatus">Transcription in progress...</span></p>
                 {% endif %}
-                <p><a href="/download_audio/{{ recording.id }}">Download audio</a>, <a
+                <p><a href="/download_audio/{{ recording.id }}">Download audio</a> or <a
                         href="/transcript/{{ recording.id }}">view transcript</a></p>
             </div>
             {% endfor %}
