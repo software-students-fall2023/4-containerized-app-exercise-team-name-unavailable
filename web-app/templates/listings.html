@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Recordings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/listings.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Recordings for: {{ username }} </h1>
+        <div id="recordingsList">
+            {% for recording in recordings %}
+            <div class="recording">
+                <h2><span class="recordingName">{{ recording.name }}</span></h2>
+                <p>Recorded on: <span class="recordingDate">{{ recording.created }}</span></p>
+                {% if recording.finished %}
+                <p><span class="recordingStatus">Transcription finished</span></p>
+                {% else %}
+                <p><span class="recordingStatus">Transcription in progress...</span></p>
+                {% endif %}
+                <p><a href="/download_audio/{{ recording.id }}">Download audio</a> or <a
+                        href="/transcript/{{ recording.id }}">view transcript</a></p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>

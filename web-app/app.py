@@ -1,20 +1,18 @@
-from flask import Flask, Response, render_template, request, redirect
+from flask import Flask, Response, render_template, request, redirect, send_file
 
 from os import getenv
 from bson.objectid import ObjectId
 
 import os
-import base64
+import base62
 import pymongo
 import datetime
 import requests
 import pickle
 
-oidtob62 = lambda oid: base64.encodebytes(oid.binary)
-b62tooid = lambda b62: ObjectId(base64.decodebytes(b62))
+oidtob62 = lambda oid: base62.encodebytes(oid.binary)
+b62tooid = lambda b62: ObjectId(base62.decodebytes(b62).hex())
 
-template_dir = os.path.abspath("./templates")
-static_dir = os.path.abspath("./static")
 template_dir = os.path.abspath("./templates")
 static_dir = os.path.abspath("./static")
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
@@ -32,8 +30,8 @@ def main():
         password=getenv("MONGO_PASSWORD"),
     )
     DB = client["recordings"]
-    # app.run(host="0.0.0.0", port=443, ssl_context=("cert.pem", "key.pem"))
-    app.run(host="0.0.0.0", port=443)
+    app.run(host="0.0.0.0", port=443, ssl_context=("certs/cert.pem", "certs/key.pem"))
+    # app.run(host="0.0.0.0", port=5000, debug=True)
 
 
 @app.route("/")
@@ -67,13 +65,13 @@ def upload():
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         timeout=5,  # 5 seconds, should be good enough
     )
-    return 202
+    return (b"", 202)
 
 
 @app.route("/record")
 def record():
     """Returns recording page."""
-    return render_template("record.html")
+    return render_template("makeRecordings.html")
 
 
 @app.route("/audio/<oid_b62>")
@@ -86,6 +84,22 @@ def get_audio(oid_b62):
     audio = pickle.loads(recording["audio"])
     # Set MIME type to audio/ogg and return audio
     return Response(audio, mimetype="audio/ogg")
+
+
+@app.route("/download_audio/<oid_b62>")
+def download_audio(oid_b62):
+    """Returns an audio file attachment for user download."""
+    oid = b62tooid(oid_b62)
+    recording = DB["recordings"].find_one({"_id": oid})
+    if recording is None:
+        return redirect("/404")
+    audio = pickle.loads(recording["audio"])
+    return send_file(
+        audio,
+        download_name=f"{recording['name']}.opus",
+        as_attachment=True,
+        mimetype="audio/ogg",
+    )
 
 
 @app.route("/transcript/<oid_b62>")
@@ -102,6 +116,25 @@ def transcript(oid_b62):
     if not recording["finished"]:
         recording["transcript"] = "Transcription in progress..."
     return render_template("transcript.html", recording=recording)
+
+
+@app.route("/listings")
+def listings():
+    """Returns all recordings in descending date order for a user."""
+    username = request.args.get("username")
+    if username is None:
+        return redirect("/404")
+    recordings = list(
+        DB["recordings"]
+        .find({"username": username}, {"audio": 0, "transcript": 0})
+        .sort("created", pymongo.DESCENDING)
+    )
+    for recording in recordings:
+        recording["id"] = oidtob62(recording["_id"])
+        recording["created"] = recording["created"].strftime(
+            "%A, %B %d %Y, %I:%M:%S %p"
+        )
+    return render_template("listings.html", username=username, recordings=recordings)
 
 
 if __name__ == "__main__":
