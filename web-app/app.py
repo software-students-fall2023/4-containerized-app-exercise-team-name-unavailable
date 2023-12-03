@@ -33,6 +33,7 @@ def main():
     app.run(host="0.0.0.0", port=443, ssl_context=("certs/cert.pem", "certs/key.pem"))
     # app.run(host="0.0.0.0", port=5000, debug=True)
 
+
 @app.route("/")
 def login():
     """Returns login page."""
@@ -64,7 +65,7 @@ def upload():
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         timeout=5,  # 5 seconds, should be good enough
     )
-    return (b"",202)
+    return (b"", 202)
 
 
 @app.route("/record")
