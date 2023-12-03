@@ -46,7 +46,7 @@ def main():
     under the assumption that this app is closed off from WAN."""
     global DB
     client = MongoClient(
-        "mongoDB://mongo:27017",
+        "mongodb://mongo:27017",
         username=getenv("MONGO_USER"),
         password=getenv("MONGO_PASSWORD"),
     )
