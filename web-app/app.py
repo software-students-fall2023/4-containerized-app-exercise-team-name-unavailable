@@ -3,7 +3,6 @@ from flask import Flask, Response, render_template, request, redirect, send_file
 from os import getenv, path
 from bson.objectid import ObjectId
 
-import os
 import base62
 import pymongo
 import datetime
