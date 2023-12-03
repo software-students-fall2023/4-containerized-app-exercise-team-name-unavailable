@@ -98,8 +98,8 @@ jobs:
         run: |
           # Check that this commit was to main
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            # mkfifo for SSH private key, ${{ secrets.SSH_PRIVATE_KEY }}
-            mkfifo -m 600 key && echo "${{ secrets.SSH_PRIVATE_KEY }}" > key && echo "SSH key ready"
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > key
+            chmod 600 key
             # Tell server at root@unavailable.duckdns.org to run the script at /root/CD.sh
             ssh -i key -o StrictHostKeyChecking=no root@unavailable.duckdns.org '/root/CD.sh'
           else
