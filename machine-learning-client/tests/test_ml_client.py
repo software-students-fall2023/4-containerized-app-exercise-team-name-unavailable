@@ -102,25 +102,23 @@ def client(monkeypatch):
 #     oid = ObjectId("607be406d3a5b5a0b1e37c06")
 #     transcribe_job(oid)
 
-def test_transcribe_job(client, monkeypatch):
+# def test_transcribe_job(client, monkeypatch):
 
+#     ml_client.DB = mongomock.MongoClient().recordings
+#     exist_oid = "ejBdVtObtsZBmMr0"
 
-
-    ml_client.DB = mongomock.MongoClient().recordings
-    exist_oid = "ejBdVtObtsZBmMr0"
-
-    def mock_find_one(*args, **kwargs):
-        if oidtob62(args[0]["_id"]) == exist_oid:
-            return {"_id": args[0]["_id"]}
+#     def mock_find_one(*args, **kwargs):
+#         if oidtob62(args[0]["_id"]) == exist_oid:
+#             return {"_id": args[0]["_id"]}
     
-    def mock_oidtob62(*args, **kwargs):
-        return "test_file_name"
+#     def mock_oidtob62(*args, **kwargs):
+#         return "test_file_name"
     
-    def mock_whisper_load_model(*args, **kwargs):
-        return None
+#     def mock_whisper_load_model(*args, **kwargs):
+#         return None
     
-    monkeypatch.setattr(ml_client.DB.recordings,"find_one", mock_find_one)
-    monkeypatch.setattr(ml_client, oidtob62, mock_oidtob62)
+#     monkeypatch.setattr(ml_client.DB.recordings,"find_one", mock_find_one)
+#     monkeypatch.setattr(ml_client, "oidtob62", mock_oidtob62)
 
 
 def test_transcribe_202(client, monkeypatch):

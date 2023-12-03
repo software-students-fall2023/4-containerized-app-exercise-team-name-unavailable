@@ -17,10 +17,10 @@ def client(monkeypatch):
         yield client
 
 
-# def test_login(client):
-#     response = client.get("/")
-#     assert response.status_code == 200
-#     assert b"<h1> Hello. Please sign in.</h1>" in response.data
+def test_login(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert b"<h1> Hello. Please sign in.</h1>" in response.data
 
 
 def test_upload(client, monkeypatch):
@@ -87,61 +87,61 @@ def test_upload(client, monkeypatch):
     file.close()
 
 
-# def test_record(client):
-#     response = client.get("/record")
-#     assert response.status_code == 200
-#     assert b"<h1>Make a Recording</h1>" in response.data
+def test_record(client):
+    response = client.get("/record")
+    assert response.status_code == 200
+    assert b"<h1>Make a Recording</h1>" in response.data
 
 
-# def test_get_audio_no_oid(client):
-#     response = client.get("/audio/")
-#     assert b"404 Not Found" in response.data
+def test_get_audio_no_oid(client):
+    response = client.get("/audio/")
+    assert b"404 Not Found" in response.data
 
 
-# def test_get_audio_not_found(client, monkeypatch):
-#     web_app.DB = mongomock.MongoClient().recordings
+def test_get_audio_not_found(client, monkeypatch):
+    web_app.DB = mongomock.MongoClient().recordings
 
-#     def mock_find_one(*args, **kwargs):
-#         return None
+    def mock_find_one(*args, **kwargs):
+        return None
 
-#     monkeypatch.setattr(web_app.DB.recordings, "find_one", mock_find_one)
-#     response = client.get("/audio/ejBdVtObtsZBmMr0", follow_redirects=True)
-#     assert response.status_code == 404
-
-
-# # def test_get_audio(client, monkeypatch):
-# #     web_app.DB = mongomock.MongoClient().recordings
-# #     exist_oid = "ejBdVtObtsZBmMr0"
-
-# #     def mock_find_one(*args, **kwargs):
-# #         if oidtob62(args[0]["_id"]) == exist_oid:
-# #             return {"_id": args[0]["_id"]}
-# #         return None
-
-# #     def mock_pickle_loads():
-# #         return "fakedata"
-
-# #     monkeypatch.setattr(web_app.DB.recordings, "find_one", mock_find_one)
-# #     monkeypatch.setattr(web_app.pickle, "loads", mock_pickle_loads)
-# #     response = client.get("/audio/ejBdVtObtsZBmMr0", follow_redirects=True)
+    monkeypatch.setattr(web_app.DB.recordings, "find_one", mock_find_one)
+    response = client.get("/audio/ejBdVtObtsZBmMr0", follow_redirects=True)
+    assert response.status_code == 404
 
 
-# def test_transcript_no_oid(client, monkeypatch):
-#     response = client.get("/transcript")
-#     assert response.status_code == 404
+def test_get_audio(client, monkeypatch):
+    web_app.DB = mongomock.MongoClient().recordings
+    exist_oid = "ejBdVtObtsZBmMr0"
+
+    def mock_find_one(*args, **kwargs):
+        if oidtob62(args[0]["_id"]) == exist_oid:
+            return {"_id": args[0]["_id"],"audio":0}
+        return None
+
+    def mock_pickle_loads(*args, **kwargs):
+        return b"fakedata"
+
+    monkeypatch.setattr(web_app.DB.recordings, "find_one", mock_find_one)
+    monkeypatch.setattr(web_app.pickle, "loads", mock_pickle_loads)
+    response = client.get("/audio/ejBdVtObtsZBmMr0", follow_redirects=True)
 
 
-# def test_transcript_404(client, monkeypatch):
-#     web_app.DB = mongomock.MongoClient().recordings
-
-#     def mock_find_one(*args, **kwargs):
-#         return None
-
-#     monkeypatch.setattr(web_app.DB.recordings, "find_one", mock_find_one)
-#     response = client.get("/transcript/ejBdVtObtsZBmMr0", follow_redirects=True)
-#     assert response.status_code == 404
+def test_transcript_no_oid(client, monkeypatch):
+    response = client.get("/transcript")
+    assert response.status_code == 404
 
 
-# def test_transscript(client, monkeypatch):
-#     web_app.DB = mongomock.MongoClient().recordings
-#     pass
+def test_transcript_404(client, monkeypatch):
+    web_app.DB = mongomock.MongoClient().recordings
+
+    def mock_find_one(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(web_app.DB.recordings, "find_one", mock_find_one)
+    response = client.get("/transcript/ejBdVtObtsZBmMr0", follow_redirects=True)
+    assert response.status_code == 404
+
+
+def test_transscript(client, monkeypatch):
+    web_app.DB = mongomock.MongoClient().recordings
+    pass
