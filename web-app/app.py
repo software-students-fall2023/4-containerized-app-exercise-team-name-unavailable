@@ -64,7 +64,7 @@ def upload():
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         timeout=5,  # 5 seconds, should be good enough
     )
-    return 202
+    return (b"",202)
 
 
 @app.route("/record")

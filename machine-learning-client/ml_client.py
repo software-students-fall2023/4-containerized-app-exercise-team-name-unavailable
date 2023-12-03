@@ -22,10 +22,10 @@ default_writer_args = {
 }
 
 
-def write_to_srt(raw_transcription):
-    """Takes output from whisper.transcribe() and writes it to an .srt file for later upload."""
-    writer = get_writer("srt", ".")
-    writer(raw_transcription, **default_writer_args)
+# def write_to_srt(raw_transcription):
+#     """Takes output from whisper.transcribe() and writes it to an .srt file for later upload."""
+#     writer = get_writer("srt", ".")
+#     writer(raw_transcription, **default_writer_args)
 
 
 # Database stuff
