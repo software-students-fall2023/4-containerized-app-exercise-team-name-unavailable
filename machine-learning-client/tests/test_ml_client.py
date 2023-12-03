@@ -143,11 +143,11 @@ def test_fetch(client, monkeypatch):
 
     def mock_find_one(*args, **kwargs):
         if oidtob62(args[0]["_id"]) == exist_oid:
-            return {"_id": args[0]["_id"]}
+            return {"_id": args[0]["_id"], "audio": b"test_audio_data"}
         return None
 
     def mock_oidtob62(*args, **kwargs):
-        return "test_file_name"
+        return exist_oid
 
     def mock_whisper_transcribe(*args, **kwargs):
         return {"key": "value"}
@@ -180,8 +180,55 @@ def test_fetch(client, monkeypatch):
 
     response = client.post("/transcribe", data={"id": exist_oid})
     assert os.path.isfile("test_file_name.opus")
-
     os.remove("test_file_name.opus")
+    assert response.status_code == 202
+
+def test_unload(client, monkeypatch):
+    """Checks that created files are deleted after unload() is called"""
+    ml_client.DB = mongomock.MongoClient().recordings
+    exist_oid = "ejBdVtObtsZBmMr0"
+
+    def mock_find_one(*args, **kwargs):
+        if oidtob62(args[0]["_id"]) == exist_oid:
+            return {"_id": args[0]["_id"], "audio": b"test_audio_data"}
+        return None
+
+    def mock_oidtob62(*args, **kwargs):
+        return exist_oid
+
+    def mock_whisper_transcribe(*args, **kwargs):
+        return {"key": "value"}
+
+    def mock_get_writer(*args, **kwargs):
+        def mock_write_to_file(*args, **kwargs):
+            pass
+
+        return mock_write_to_file
+
+    def mock_writer(*args, **kwargs):
+        def mock_write_to_file(*args, **kwargs):
+            # Create a file
+            open(f"{exist_oid}.srt", "w+", encoding='utf-8').close()
+
+        return mock_write_to_file
+
+    def mock_update_one(*args, **kwargs):
+        pass
+
+    def mock_unload(*args, **kwargs):
+        pass
+
+    monkeypatch.setattr(ml_client.DB.recordings, "find_one", mock_find_one)
+    monkeypatch.setattr(ml_client, "oidtob62", mock_oidtob62)
+    monkeypatch.setattr(ml_client.whisper, "transcribe", mock_whisper_transcribe)
+    monkeypatch.setattr(ml_client.whisper.utils, "get_writer", mock_get_writer)
+    monkeypatch.setattr(ml_client.whisper.utils, "writer", mock_writer)
+    monkeypatch.setattr(ml_client.DB.recordings, "update_one", mock_update_one)
+    monkeypatch.setattr(ml_client, "unload", mock_unload)
+    response = client.post("/transcribe", data={"id": exist_oid})
+    assert not os.path.isfile(f"{exist_oid}.opus")
+    assert not os.path.isfile(f"{exist_oid}.srt")
+    assert response.status_code == 202
 
 
 def test_transcribe_404(client, monkeypatch):
