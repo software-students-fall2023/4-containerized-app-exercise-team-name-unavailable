@@ -13,8 +13,8 @@ import pickle
 oidtob62 = lambda oid: base62.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base62.decodebytes(b62).hex())
 
-template_dir = path.abspath("/templates")
-static_dir = path.abspath("/static")
+template_dir = path.abspath("./templates")
+static_dir = path.abspath("./static")
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 DB = None
