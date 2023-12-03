@@ -48,7 +48,7 @@ def test_upload(client, monkeypatch):
 
 
 def test_record(client):
-    response = client.get("/record")
+    response = client.get("/record?username=fakeUsername")
     assert response.status_code == 200
     assert b"<h1>Make a Recording</h1>" in response.data
 

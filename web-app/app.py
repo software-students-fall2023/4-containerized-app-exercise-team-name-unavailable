@@ -30,8 +30,7 @@ def main():
         password=getenv("MONGO_PASSWORD"),
     )
     DB = client["recordings"]
-    app.run(host="0.0.0.0", port=443, ssl_context=("certs/cert.pem", "certs/key.pem"))
-    # app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=443, ssl_context=("certs/cert.pem", "certs/privkey.pem"), debug=True)
 
 
 @app.route("/")
@@ -122,7 +121,7 @@ def transcript(oid_b62):
 def listings():
     """Returns all recordings in descending date order for a user."""
     username = request.args.get("username")
-    if username is None:
+    if username is None or username == "":
         return redirect("/404")
     recordings = list(
         DB["recordings"]
