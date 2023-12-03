@@ -5,12 +5,16 @@ services:
     ports:
       - "443:443"
     volumes:
-      - certs:/certs
+      - ./certs:/certs
+    depends_on:
+      - ml
   ml:
     image: teamnameunavailable/machine-learning-client:latest
     container_name: ml
     ports:
       - "80:80"
+    depends_on:
+      - mongo
   mongo:
     image: mongo:latest
     container_name: mongo
@@ -20,4 +24,4 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongodb-data:/data/db
+      - ./mongodb-data:/data/db
