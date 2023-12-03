@@ -1,9 +1,9 @@
 <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 
 <div class="login">
-    <form action="/listings" method="post">
+    <form action="/listings" method="get">
         <h1> Hello. Please sign in.</h1>
         <div class="input-boxes">
             <input type="text" name="username" required /><br>
