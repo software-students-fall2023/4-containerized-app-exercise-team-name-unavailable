@@ -1,9 +1,8 @@
 from flask import Flask, Response, render_template, request, redirect, send_file
 
-from os import getenv
+from os import getenv, path
 from bson.objectid import ObjectId
 
-import os
 import base62
 import pymongo
 import datetime
@@ -13,8 +12,8 @@ import pickle
 oidtob62 = lambda oid: base62.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base62.decodebytes(b62).hex())
 
-template_dir = os.path.abspath("./templates")
-static_dir = os.path.abspath("./static")
+template_dir = path.abspath("./templates")
+static_dir = path.abspath("./static")
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 DB = None
@@ -30,8 +29,12 @@ def main():
         password=getenv("MONGO_PASSWORD"),
     )
     DB = client["recordings"]
-    app.run(host="0.0.0.0", port=443, ssl_context=("certs/cert.pem", "certs/key.pem"))
-    # app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(
+        host="0.0.0.0",
+        port=443,
+        ssl_context=("certs/cert.pem", "certs/privkey.pem"),
+        debug=True,
+    )
 
 
 @app.route("/")
@@ -122,7 +125,7 @@ def transcript(oid_b62):
 def listings():
     """Returns all recordings in descending date order for a user."""
     username = request.args.get("username")
-    if username is None:
+    if username is None or username == "":
         return redirect("/404")
     recordings = list(
         DB["recordings"]

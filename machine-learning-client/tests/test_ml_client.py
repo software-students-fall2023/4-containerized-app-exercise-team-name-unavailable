@@ -87,16 +87,43 @@ def test_main(monkeypatch):
 
     with patch("ml_client.MongoClient") as mock_mongo_client:
         mock_mongo_client.return_value = mock_mongo_client
-        mock_mongo_client.__getitem__.return_value = None
+        mock_mongo_client["recordings"].return_value = mock_mongo_client["recordings"]
 
         with patch("ml_client.app.run") as mock_app_run:
-            ml_client.main()
+            main()
 
             mock_mongo_client.assert_called_once_with(
                 "mongoDB://mongo:27017", username="test_user", password="test_password"
             )
 
-            mock_mongo_client.__getitem__.assert_called_once_with("recordings")
+            def mock_list_database_names(*args, **kwargs):
+                pass
+
+            def mock_list_collection_names(*args, **kwargs):
+                pass
+
+            def mock_create_database(*args, **kwargs):
+                pass
+
+            def mock_create_collection(*args, **kwargs):
+                pass
+
+            monkeypatch.setattr(
+                mock_mongo_client, "list_database_names", mock_list_database_names
+            )
+            monkeypatch.setattr(
+                mock_mongo_client["recordings"],
+                "list_collection_names",
+                mock_list_collection_names,
+            )
+            monkeypatch.setattr(
+                mock_mongo_client, "create_database", mock_create_database
+            )
+            monkeypatch.setattr(
+                mock_mongo_client["recordings"],
+                "create_collection",
+                mock_create_collection,
+            )
 
             mock_app_run.assert_called_once_with(
                 host="0.0.0.0", port=80, debug=True, load_dotenv=False
