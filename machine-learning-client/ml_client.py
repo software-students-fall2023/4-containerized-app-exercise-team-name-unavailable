@@ -53,15 +53,26 @@ def main():
     DB = client["recordings"]
     app.run(host="0.0.0.0", port=80, debug=True, load_dotenv=False)
 
-
-def transcribe_job(oid: ObjectId):
-    """Takes base62 object ID and starts a transcription job asynchronously."""
+def fetch(oid: ObjectId):
+    """Loads audio data from database into oid_b62.opus, returns oid_b62."""
     # Get pickled opus audio data from database
     db_audio = DB.recordings.find_one({"_id": oid})["audio"]
     filename = oidtob62(oid)
     # Write to .opus file
     with open(f"{filename}.opus", "wb") as f:
         f.write(pickle.loads(db_audio))
+    return filename
+
+def unload(oid: ObjectId):
+    """Removes audio data and transcript from filesystem after upload to DB."""
+    filename = oidtob62(oid)
+    remove(f"{filename}.opus")
+    remove(f"{filename}.srt")
+
+def transcribe_job(oid: ObjectId):
+    """Takes base62 object ID and starts a transcription job asynchronously."""
+    # Get pickled opus audio data from database
+    filename = fetch(oid)
     model = whisper.load_model("tiny.en")
     model.device = device("cpu")
     # Transcribe audio into f"{filename}.srt" using transcribe() and get_writer()
@@ -76,9 +87,7 @@ def transcribe_job(oid: ObjectId):
         DB.recordings.update_one(
             {"_id": oid}, {"$set": {"transcript": f.read(), "finished": True}}
         )
-    # Remove .opus and .srt files
-    remove(f"{filename}.opus")
-    remove(f"{filename}.srt")
+    unload(oid)
 
 
 @app.route("/transcribe", methods=["POST"])
