@@ -82,7 +82,7 @@ def test_index(client):
 
 
 def test_main(monkeypatch):
-    monkeypatch.setenv("MONGO_USER", "test_user")
+    monkeypatch.setenv("MONGO_USERNAME", "test_user")
     monkeypatch.setenv("MONGO_PASSWORD", "test_password")
 
     with patch("ml_client.MongoClient") as mock_mongo_client:
