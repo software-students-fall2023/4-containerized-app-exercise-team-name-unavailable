@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 from multiprocessing import Process
 import whisper
 from whisper.utils import get_writer
-from torch import device
 
 # Obtained from whisper/transcribe.py (default CLI args)
 default_writer_args = {
@@ -82,7 +81,7 @@ def transcribe_job(oid: ObjectId):
         f"{filename}.webm",
     )
     writer = get_writer("srt", ".")
-    writer(raw_transcription, **default_writer_args)
+    writer(raw_transcription, audio_path=f"/{filename}.webm", **default_writer_args)
     # Put contents of f"{filename}.srt" into same document, and set finished to true
     with open(f"{filename}.srt", "r", encoding="utf-8") as f:
         DB.recordings.update_one(
