@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+#recordingForm {
+    margin-top: 20px;
+}
+
+label, input, button {
+    display: block;
+    margin-bottom: 10px;
+}
+
+button:disabled {
+    background-color: #ccc;
+}
