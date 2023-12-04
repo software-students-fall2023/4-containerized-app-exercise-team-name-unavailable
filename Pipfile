@@ -21,6 +21,7 @@ torch = {version="*", index="pytorch"}
 requests = "*"
 mongomock = "*"
 coverage = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

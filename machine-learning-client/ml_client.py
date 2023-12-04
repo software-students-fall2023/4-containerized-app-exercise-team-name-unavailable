@@ -1,14 +1,18 @@
 # Web stuff
 from flask import Flask, request
-from os import getenv, remove
-from multiprocessing import Process
-
-# Note: Environment is provided in .env, but automatically loaded via docker compose.
-# There is no need for load_dotenv().
 
 app = Flask(__name__)
 
+# Environment variables
+from os import getenv, remove
+from dotenv import load_dotenv
+
+# .env stored in /certs
+load_dotenv(dotenv_path="/certs/.env")
+
+
 # AI stuff
+from multiprocessing import Process
 import whisper
 from whisper.utils import get_writer
 from torch import device

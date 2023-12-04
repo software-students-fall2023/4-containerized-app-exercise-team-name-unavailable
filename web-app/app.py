@@ -1,6 +1,11 @@
 from flask import Flask, Response, render_template, request, redirect, send_file
 
-from os import getenv, path
+from os import getenv, remove, path
+from dotenv import load_dotenv
+
+# .env stored in /certs
+load_dotenv(dotenv_path="/certs/.env")
+
 from bson.objectid import ObjectId
 
 import base62
