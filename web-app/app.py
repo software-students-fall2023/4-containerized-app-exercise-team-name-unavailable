@@ -75,7 +75,8 @@ def upload():
 @app.route("/record")
 def record():
     """Returns recording page."""
-    return render_template("makeRecordings.html")
+    username = request.args.get("username")
+    return render_template("makeRecordings.html", username=username)
 
 
 @app.route("/audio/<oid_b62>")
