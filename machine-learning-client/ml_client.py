@@ -54,12 +54,12 @@ def main():
 
 
 def fetch(oid: ObjectId):
-    """Loads audio data from database into oid_b62.opus, returns oid_b62."""
+    """Loads audio data from database into oid_b62.webm, returns oid_b62."""
     # Get pickled opus audio data from database
     db_audio = DB.recordings.find_one({"_id": oid})["audio"]
     filename = oidtob62(oid)
-    # Write to .opus file
-    with open(f"{filename}.opus", "wb") as f:
+    # Write to .webm file
+    with open(f"{filename}.webm", "wb") as f:
         f.write(pickle.loads(db_audio))
     return filename
 
@@ -67,7 +67,7 @@ def fetch(oid: ObjectId):
 def unload(oid: ObjectId):
     """Removes audio data and transcript from filesystem after upload to DB."""
     filename = oidtob62(oid)
-    remove(f"{filename}.opus")
+    remove(f"{filename}.webm")
     remove(f"{filename}.srt")
 
 
@@ -80,7 +80,7 @@ def transcribe_job(oid: ObjectId):
     # Transcribe audio into f"{filename}.srt" using transcribe() and get_writer()
     raw_transcription = whisper.transcribe(
         model,
-        f"{filename}.opus",
+        f"{filename}.webm",
     )
     writer = get_writer("srt", ".")
     writer(raw_transcription, **default_writer_args)

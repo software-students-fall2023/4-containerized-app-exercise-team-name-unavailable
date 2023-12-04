@@ -47,17 +47,17 @@ def test_fetch(monkeypatch):
     monkeypatch.setattr(ml_client.DB.recordings, "find_one", mock_find_one)
     monkeypatch.setattr(pickle, "loads", mock_pickle_loads)
     fetch(b62tooid(exist_oid))
-    assert os.path.isfile(f"{exist_oid}.opus")
-    os.remove(f"{exist_oid}.opus")
+    assert os.path.isfile(f"{exist_oid}.webm")
+    os.remove(f"{exist_oid}.webm")
 
 
 def test_unload(client, monkeypatch):
     """Check that unload() removes the files it is supposed to remove"""
     exist_oid = "ejBdVtObtsZBmMr0"
-    open(f"{exist_oid}.opus", "w+", encoding="utf-8").close()
+    open(f"{exist_oid}.webm", "w+", encoding="utf-8").close()
     open(f"{exist_oid}.srt", "w+", encoding="utf-8").close()
     unload(b62tooid(exist_oid))
-    assert not os.path.isfile(f"{exist_oid}.opus")
+    assert not os.path.isfile(f"{exist_oid}.webm")
     assert not os.path.isfile(f"{exist_oid}.srt")
 
 
