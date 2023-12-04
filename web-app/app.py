@@ -4,7 +4,7 @@ from os import getenv, path
 from bson.objectid import ObjectId
 
 import base62
-import pymongo
+from pymongo import MongoClient, DESCENDING
 import datetime
 import requests
 import pickle
@@ -23,10 +23,8 @@ def main():
     """Launches public-facing user interface for dictation app."""
     # connect to database
     global DB
-    client = pymongo.MongoClient(
-        "mongodb://mongo:27017",
-        username=getenv("MONGO_USER"),
-        password=getenv("MONGO_PASSWORD"),
+    client = MongoClient(
+        f"mongodb://{getenv('MONGO_USER')}:{getenv('MONGO_PASSWORD')}mongo:27017/recordings"
     )
     DB = client["recordings"]
     app.run(
@@ -130,7 +128,7 @@ def listings():
     recordings = list(
         DB["recordings"]
         .find({"username": username}, {"audio": 0, "transcript": 0})
-        .sort("created", pymongo.DESCENDING)
+        .sort("created", DESCENDING)
     )
     for recording in recordings:
         recording["id"] = oidtob62(recording["_id"])

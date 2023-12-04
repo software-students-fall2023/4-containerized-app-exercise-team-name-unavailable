@@ -46,9 +46,7 @@ def main():
     under the assumption that this app is closed off from WAN."""
     global DB
     client = MongoClient(
-        "mongodb://mongo:27017",
-        username=getenv("MONGO_USER"),
-        password=getenv("MONGO_PASSWORD"),
+        f"mongodb://{getenv('MONGO_USER')}:{getenv('MONGO_PASSWORD')}mongo:27017/recordings"
     )
     # Check if a database called "recordings" exists, and create it if not
     if "recordings" not in client.list_database_names():
