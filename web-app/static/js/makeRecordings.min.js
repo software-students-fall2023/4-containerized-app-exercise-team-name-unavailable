@@ -55,14 +55,12 @@ document.getElementById('recordingForm').addEventListener('submit', function(e) 
       body: formData
     })
     .then(response => {
-        if (!response.ok) {
+        if (response.status === 202) {
+            console.log('Success: Recording uploaded successfully.');
+            alert("Recording uploaded successfully.");
+        } else {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        return response.json();
-    })
-    .then(data => {
-      console.log('Success:', data);
-      alert("Recording uploaded successfully.");
     })
     .catch((error) => {
       console.error('Error:', error);
