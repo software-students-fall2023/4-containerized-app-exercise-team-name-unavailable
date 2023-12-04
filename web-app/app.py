@@ -4,7 +4,7 @@ from os import getenv, remove, path
 from dotenv import load_dotenv
 
 # .env stored in /certs
-load_dotenv(dotenv_path="/certs/.env")
+load_dotenv(dotenv_path="/certs/.env", override=True)
 
 from bson.objectid import ObjectId
 

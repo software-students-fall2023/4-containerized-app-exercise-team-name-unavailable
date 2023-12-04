@@ -8,7 +8,7 @@ from os import getenv, remove
 from dotenv import load_dotenv
 
 # .env stored in /certs
-load_dotenv(dotenv_path="/certs/.env")
+load_dotenv(dotenv_path="/certs/.env", override=True)
 
 
 # AI stuff
