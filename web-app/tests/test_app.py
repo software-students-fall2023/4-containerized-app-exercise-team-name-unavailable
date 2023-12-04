@@ -3,6 +3,7 @@ import app as web_app
 from app import *
 import base62
 import mongomock
+from pymongo.results import InsertOneResult
 
 oidtob62 = lambda oid: base62.encodebytes(oid.binary)
 b62tooid = lambda b62: ObjectId(base62.decodebytes(b62))
@@ -24,13 +25,14 @@ def test_login(client):
 
 
 def test_upload(client, monkeypatch):
-    file = open("tests/test_audio.opus", "rb")
+    file = open("tests/test_audio.webm", "rb")
 
     def mock_post(*args, **kwargs):
         return "fakedata"
 
     def mock_insert_one(*args, **kwargs):
-        return b62tooid("ejBdVtObtsZBmMr0")
+        return InsertOneResult(b62tooid("ejBdVtObtsZBmMr0"), True)
+            #return 
 
     web_app.DB = mongomock.MongoClient().recordings
 

@@ -54,7 +54,7 @@ def upload():
     name = request.form["name"]
     username = request.form["username"]
     # save audio in database
-    oid = DB["recordings"].insert_one(
+    result = DB["recordings"].insert_one(
         {
             "name": name,
             "username": username,
@@ -62,7 +62,10 @@ def upload():
             "finished": False,
             "created": datetime.datetime.utcnow(),
         }
-    ).inserted_id
+    )
+    print(type(result))
+    # Get the inserted ObjectId
+    oid = result.inserted_id
     requests.post(
         "http://ml:80/transcribe",
         data={"id": oidtob62(oid)},
