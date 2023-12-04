@@ -5,7 +5,7 @@
 
 ## Description
 
-This Project allows users to make a recording and then view this recording and all previous recordings they have made as text.
+[This Project](https://unavailable.duckdns.org) allows users to make a recording and then view this recording and all previous recordings they have made as text.
 
 ## Team Members
 
