@@ -24,7 +24,7 @@ def main():
     # connect to database
     global DB
     client = MongoClient(
-        f"mongodb://{getenv('MONGO_USER')}:{getenv('MONGO_PASSWORD')}mongo:27017/recordings"
+        f"mongodb://{getenv('MONGO_USERNAME')}:{getenv('MONGO_PASSWORD')}@mongo"
     )
     DB = client["recordings"]
     app.run(
