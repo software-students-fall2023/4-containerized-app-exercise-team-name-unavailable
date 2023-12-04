@@ -10,6 +10,7 @@
 <body>
     <div class="container">
         <h1>Recordings for: {{ username }} </h1>
+        <a href="/record?username={{ username }}">Make a new recording</a>
         <div id="recordingsList">
             {% for recording in recordings %}
             <div class="recording">
