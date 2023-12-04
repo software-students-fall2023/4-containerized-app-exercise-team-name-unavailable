@@ -8,8 +8,13 @@ from os import getenv, remove
 from dotenv import load_dotenv
 
 # .env stored in /certs
+print("before")
+print(getenv("MONGO_USERNAME"))
+print(getenv("MONGO_PASSWORD"))
 load_dotenv(dotenv_path="/certs/.env", override=True)
-
+print("after")
+print(getenv("MONGO_USERNAME"))
+print(getenv("MONGO_PASSWORD"))
 
 # AI stuff
 from multiprocessing import Process
@@ -49,8 +54,7 @@ def main():
     """Connects to database and launches Flask app,
     under the assumption that this app is closed off from WAN."""
     global DB
-    print(getenv("MONGO_USERNAME"))
-    print(getenv("MONGO_PASSWORD"))
+    load_dotenv(dotenv_path="/certs/.env", override=True)
     client = MongoClient(
         f"mongodb://{getenv('MONGO_USERNAME')}:{getenv('MONGO_PASSWORD')}@mongo"
     )
