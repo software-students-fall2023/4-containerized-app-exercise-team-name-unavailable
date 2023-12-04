@@ -75,8 +75,7 @@ def transcribe_job(oid: ObjectId):
     """Takes base62 object ID and starts a transcription job asynchronously."""
     # Get pickled opus audio data from database
     filename = fetch(oid)
-    model = whisper.load_model("tiny.en")
-    model.device = device("cpu")
+    model = whisper.load_model("tiny.en", device="cpu")
     # Transcribe audio into f"{filename}.srt" using transcribe() and get_writer()
     raw_transcription = whisper.transcribe(
         model,
