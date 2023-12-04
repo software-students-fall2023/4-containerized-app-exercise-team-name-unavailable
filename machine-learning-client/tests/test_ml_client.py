@@ -126,5 +126,5 @@ def test_main(monkeypatch):
             )
 
             mock_app_run.assert_called_once_with(
-                host="0.0.0.0", port=80, debug=True, load_dotenv=False
+                host="0.0.0.0", port=80, load_dotenv=False
             )
