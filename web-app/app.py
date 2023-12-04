@@ -62,7 +62,7 @@ def upload():
             "finished": False,
             "created": datetime.datetime.utcnow(),
         }
-    )
+    ).inserted_id
     requests.post(
         "http://ml:80/transcribe",
         data={"id": oidtob62(oid)},
@@ -101,7 +101,7 @@ def download_audio(oid_b62):
     audio = pickle.loads(recording["audio"])
     return send_file(
         audio,
-        download_name=f"{recording['name']}.opus",
+        download_name=f"{recording['name']}.webm",
         as_attachment=True,
         mimetype="audio/ogg",
     )
