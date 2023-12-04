@@ -7,9 +7,6 @@ app = Flask(__name__)
 from os import remove, environ
 from dotenv import load_dotenv
 
-# .env stored in /certs
-load_dotenv(dotenv_path="/certs/.env", override=True)
-
 # AI stuff
 from multiprocessing import Process
 import whisper
@@ -48,6 +45,7 @@ def main():
     """Connects to database and launches Flask app,
     under the assumption that this app is closed off from WAN."""
     global DB
+    assert load_dotenv(dotenv_path="/certs/.env", override=True)
     client = MongoClient(
         f"mongodb://{environ.get('MONGO_USERNAME')}:{environ.get('MONGO_PASSWORD')}@mongo"
     )

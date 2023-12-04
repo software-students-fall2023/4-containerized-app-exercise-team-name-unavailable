@@ -3,9 +3,6 @@ from flask import Flask, Response, render_template, request, redirect, send_file
 from os import path, environ
 from dotenv import load_dotenv
 
-# .env stored in /certs
-load_dotenv(dotenv_path="/certs/.env", override=True)
-
 from bson.objectid import ObjectId
 
 import base62
@@ -28,6 +25,7 @@ def main():
     """Launches public-facing user interface for dictation app."""
     # connect to database
     global DB
+    assert load_dotenv(dotenv_path="/certs/.env", override=True)
     client = MongoClient(
         f"mongodb://{environ.get('MONGO_USERNAME')}:{environ.get('MONGO_PASSWORD')}@mongo"
     )
