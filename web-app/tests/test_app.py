@@ -32,7 +32,7 @@ def test_upload(client, monkeypatch):
 
     def mock_insert_one(*args, **kwargs):
         return InsertOneResult(b62tooid("ejBdVtObtsZBmMr0"), True)
-            #return 
+        # return
 
     web_app.DB = mongomock.MongoClient().recordings
 
