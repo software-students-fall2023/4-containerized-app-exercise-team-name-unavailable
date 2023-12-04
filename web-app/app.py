@@ -2,6 +2,7 @@ from flask import Flask, Response, render_template, request, redirect, send_file
 
 from os import path, environ
 from dotenv import load_dotenv
+from io import BytesIO
 
 from bson.objectid import ObjectId
 
@@ -98,16 +99,18 @@ def get_audio(oid_b62):
 def download_audio(oid_b62):
     """Returns an audio file attachment for user download."""
     oid = b62tooid(oid_b62)
-    recording = DB["recordings"].find_one({"_id": oid})
+    recording = DB["recordings"].find_one({"_id": oid}, {"audio": 1})
     if recording is None:
         return redirect("/404")
     audio = pickle.loads(recording["audio"])
-    return send_file(
-        audio,
+    response_length = len(audio)
+    response = send_file(
+        BytesIO(audio),
         download_name=f"{recording['name']}.webm",
         as_attachment=True,
-        mimetype="audio/ogg",
+        mimetype="audio/webm",
     )
+    response.headers["Content-Length"] = response_length
 
 
 @app.route("/transcript/<oid_b62>")
