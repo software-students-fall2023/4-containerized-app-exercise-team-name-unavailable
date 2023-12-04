@@ -90,7 +90,9 @@ jobs:
           pipenv install
           cd machine-learning-client
           sudo mkdir /certs
-          sudo echo "MONGO_USERNAME=fake_username" > /certs/.env
+          sudo touch /certs/.env
+          sudo chmod 777 /certs/.env
+          sudo echo "MONGO_USERNAME=fake_username" >> /certs/.env
           sudo echo "MONGO_PASSWORD=fake_password" >> /certs/.env
           pipenv run pytest -p no:warnings
   deploy:
