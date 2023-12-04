@@ -13,6 +13,8 @@ services:
     container_name: ml
     ports:
       - "80:80"
+    volumes:
+      - ./certs:/certs
     depends_on:
       - mongo
   mongo:
