@@ -45,6 +45,8 @@ def main():
     """Connects to database and launches Flask app,
     under the assumption that this app is closed off from WAN."""
     global DB
+    print(getenv("MONGO_USERNAME"))
+    print(getenv("MONGO_PASSWORD"))
     client = MongoClient(
         f"mongodb://{getenv('MONGO_USERNAME')}:{getenv('MONGO_PASSWORD')}@mongo"
     )
