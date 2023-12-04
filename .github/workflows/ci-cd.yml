@@ -23,11 +23,11 @@ jobs:
         run: |
           # To reference the latest on a non-trunk branch, use web-app:latest.sanitized_ref
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            docker buildx build --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:latest --file ./web-app/Dockerfile .
+            docker buildx build --no-cache --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:latest --file ./web-app/Dockerfile .
           else
             # In a separate variable, replace all special characters in ${{ github.ref }} (except '-' and '.') with '_', and remove the 'refs/heads/' prefix
             sanitized_ref=$(echo "${{ github.ref }}" | sed -E 's/[^a-zA-Z0-9_.-]+/_/g' | sed -E 's/^refs_heads_//g')
-            docker buildx build --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:latest.$sanitized_ref --file ./web-app/Dockerfile .
+            docker buildx build --no-cache --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/web-app:latest.$sanitized_ref --file ./web-app/Dockerfile .
           fi
   test_web_app:
     runs-on: ubuntu-latest
@@ -63,12 +63,12 @@ jobs:
         run: |
           # To reference the latest on a non-trunk branch, use machine-learning-client:latest.sanitized_ref
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            docker buildx build --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:latest --file ./machine-learning-client/Dockerfile .
+            docker buildx build --no-cache --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:latest --file ./machine-learning-client/Dockerfile .
           else
             # In a separate variable, replace all special characters in ${{ github.ref }} (except '-' and '.') with '_', and remove the 'refs/heads/' prefix
             sanitized_ref=$(echo "${{ github.ref }}" | sed -E 's/[^a-zA-Z0-9_.-]+/_/g' | sed -E 's/^refs_heads_//g')
             if [[ -n $(git diff --name-only ${{ github.sha }} HEAD -- ./machine-learning-client) ]]; then
-              docker buildx build --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:latest.$sanitized_ref --file ./machine-learning-client/Dockerfile .
+              docker buildx build --no-cache --push --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:$(date +%s) --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:${{ github.sha }} --tag docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/machine-learning-client:latest.$sanitized_ref --file ./machine-learning-client/Dockerfile .
             else
               echo "No changes in /machine-learning-client directory. Skipping Docker build and push."
             fi
