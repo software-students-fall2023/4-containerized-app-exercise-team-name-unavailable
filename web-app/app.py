@@ -110,6 +110,7 @@ def download_audio(oid_b62):
         mimetype="audio/webm",
     )
     response.headers["Content-Length"] = response_length
+    return response
 
 
 @app.route("/transcript/<oid_b62>")
