@@ -92,8 +92,8 @@ jobs:
           sudo mkdir /certs
           sudo touch /certs/.env
           sudo chmod 777 /certs/.env
-          sudo echo "MONGO_USERNAME=fake_username" >> /certs/.env
-          sudo echo "MONGO_PASSWORD=fake_password" >> /certs/.env
+          sudo echo "MONGO_USERNAME=test_user" >> /certs/.env
+          sudo echo "MONGO_PASSWORD=test_password" >> /certs/.env
           pipenv run pytest -p no:warnings
   deploy:
     runs-on: ubuntu-latest
