@@ -49,12 +49,6 @@ def main():
     client = MongoClient(
         f"mongodb://{environ.get('MONGO_USERNAME')}:{environ.get('MONGO_PASSWORD')}@mongo"
     )
-    # Check if a database called "recordings" exists, and create it if not
-    if "recordings" not in client.list_database_names():
-        client.create_database("recordings")
-    # Check that a collection called "recordings" exists, and create it if not
-    if "recordings" not in client["recordings"].list_collection_names():
-        client["recordings"].create_collection("recordings")
     DB = client["recordings"]
     app.run(host="0.0.0.0", port=80, debug=True, load_dotenv=False)
 
