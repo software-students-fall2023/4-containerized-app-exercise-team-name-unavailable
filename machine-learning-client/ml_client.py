@@ -4,17 +4,11 @@ from flask import Flask, request
 app = Flask(__name__)
 
 # Environment variables
-from os import getenv, remove
+from os import remove, environ
 from dotenv import load_dotenv
 
 # .env stored in /certs
-print("before")
-print(getenv("MONGO_USERNAME"))
-print(getenv("MONGO_PASSWORD"))
 load_dotenv(dotenv_path="/certs/.env", override=True)
-print("after")
-print(getenv("MONGO_USERNAME"))
-print(getenv("MONGO_PASSWORD"))
 
 # AI stuff
 from multiprocessing import Process
@@ -54,9 +48,8 @@ def main():
     """Connects to database and launches Flask app,
     under the assumption that this app is closed off from WAN."""
     global DB
-    load_dotenv(dotenv_path="/certs/.env", override=True)
     client = MongoClient(
-        f"mongodb://{getenv('MONGO_USERNAME')}:{getenv('MONGO_PASSWORD')}@mongo"
+        f"mongodb://{environ.get('MONGO_USERNAME')}:{environ.get('MONGO_PASSWORD')}@mongo"
     )
     # Check if a database called "recordings" exists, and create it if not
     if "recordings" not in client.list_database_names():

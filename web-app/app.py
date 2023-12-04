@@ -1,6 +1,6 @@
 from flask import Flask, Response, render_template, request, redirect, send_file
 
-from os import getenv, path
+from os import path, environ
 from dotenv import load_dotenv
 
 # .env stored in /certs
@@ -29,7 +29,7 @@ def main():
     # connect to database
     global DB
     client = MongoClient(
-        f"mongodb://{getenv('MONGO_USERNAME')}:{getenv('MONGO_PASSWORD')}@mongo"
+        f"mongodb://{environ.get('MONGO_USERNAME')}:{environ.get('MONGO_PASSWORD')}@mongo"
     )
     DB = client["recordings"]
     app.run(
