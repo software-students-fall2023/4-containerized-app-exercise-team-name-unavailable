@@ -2,20 +2,22 @@ let recorder;
 let audioChunks = [];
 
 document.getElementById('startRecording').addEventListener('click', function() {
-    Recorder.getAudioStreamAsync().then(function(stream) {
-        recorder = new Recorder({
-            encoderPath: "encoderWorker.min.js",
-            stream: stream
-        });
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(function(stream) {
+            recorder = new Recorder({
+                encoderPath: "encoderWorker.min.js",
+                stream: stream
+            });
 
-        recorder.start().then(() => {
-            console.log('Recording started');
-            document.getElementById('startRecording').disabled = true;
-            document.getElementById('stopRecording').disabled = false;
+            recorder.start().then(() => {
+                console.log('Recording started');
+                document.getElementById('startRecording').disabled = true;
+                document.getElementById('stopRecording').disabled = false;
+            });
+        })
+        .catch(function(err) {
+            console.error('Error accessing audio stream:', err);
         });
-    }).catch(function(err) {
-        console.error('Error accessing audio stream:', err);
-    });
 });
 
 document.getElementById('stopRecording').addEventListener('click', function() {
