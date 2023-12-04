@@ -49,7 +49,7 @@ def main():
         f"mongodb://{environ.get('MONGO_USERNAME')}:{environ.get('MONGO_PASSWORD')}@mongo"
     )
     DB = client["recordings"]
-    app.run(host="0.0.0.0", port=80, debug=True, load_dotenv=False)
+    app.run(host="0.0.0.0", port=80, load_dotenv=False)
 
 
 def fetch(oid: ObjectId):

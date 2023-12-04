@@ -35,7 +35,6 @@ def main():
         host="0.0.0.0",
         port=443,
         ssl_context=("certs/cert.pem", "certs/privkey.pem"),
-        debug=True,
     )
 
 
@@ -99,7 +98,7 @@ def get_audio(oid_b62):
 def download_audio(oid_b62):
     """Returns an audio file attachment for user download."""
     oid = b62tooid(oid_b62)
-    recording = DB["recordings"].find_one({"_id": oid}, {"audio": 1})
+    recording = DB["recordings"].find_one({"_id": oid}, {"audio": 1, "name": 1})
     if recording is None:
         return redirect("/404")
     audio = pickle.loads(recording["audio"])
